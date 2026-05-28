@@ -904,6 +904,285 @@ const CRIMES = [
 ]; // fin CRIMES
 
 
+// =====================================================
+//  VARIANTES DE CULPABLE — Rejugabilidad
+//  Cada escenario tiene 1+ culpables alternativos pre-escritos.
+//  El mismo método de asesinato se mantiene; cambian QUIÉN y POR QUÉ,
+//  junto con las pistas que apuntan al culpable (riddle/sopa/cifrado/testimonio).
+//  La adivinanza (método) NO cambia: el crimen ocurrió igual, varía el autor.
+// =====================================================
+
+const CRIME_VARIANTS = {
+
+  // ── #0 Muerte en la Villa Roja → Dra. Inés Morales (médica) ──
+  0: [{
+    culprit: 3,
+    riddleClue: "La autopsia confirmó sedantes en el vino. Solo quien manejaba sus medicamentos conocía la dosis exacta que resultaba letal.",
+    wsClue: "Quien controlaba los sedantes de la señora podía calcular al miligramo cuánto bastaba para matar sin levantar sospechas.",
+    cipher: { answer: "RECETA", shift: 5, hint: "Lo que la doctora controlaba y manipulaba. Seis letras.", clue: "La Dra. Morales había cambiado la receta de la señora dos semanas antes, reemplazando su sedante habitual por uno mucho más potente." },
+    testimony: {
+      text: "El ama de llaves Dolores García declaró:\n\n\"La doctora Morales vino esa tarde, fuera de su día habitual de visita. Se ofreció a preparar ella misma el vino de la noche de la señora, algo que jamás hacía. Noté que el frasco de sedantes sobre la mesa de luz había sido reemplazado: las pastillas eran de otro color. Cuando se lo comenté, me dijo que era 'la misma fórmula, otro laboratorio'. Días antes, la señora me había confiado que pensaba cambiar de médico porque ya no confiaba en ella.\"",
+      question: "¿Qué indicio del testimonio señala más directamente a la culpable?",
+      options: [
+        { text: "La doctora preparó personalmente el vino y reemplazó el frasco de sedantes por pastillas distintas", correct: true },
+        { text: "La señora pensaba cambiar de médico porque ya no confiaba en ella", correct: false },
+        { text: "La doctora visitó la villa fuera de su día habitual de visita", correct: false },
+        { text: "El ama de llaves no examinó las pastillas de cerca", correct: false }
+      ],
+      explanation: "Preparar el vino y sustituir los sedantes por pastillas de otra fórmula le dio el control absoluto sobre la dosis. La doctora era la única que sabía exactamente cuánto sedante resultaba mortal."
+    }
+  }],
+
+  // ── #1 El Banquete de las Mentiras → Carmen López (dueña) ──
+  1: [{
+    culprit: 2,
+    riddleClue: "El chef tenía alergia severa al maní. Pero alguien más allá de la cocina conocía su historia clínica: quien firmó su seguro de vida.",
+    wsClue: "La dueña perdería el restaurante si Mathieu se iba. Su muerte, en cambio, activaba pólizas millonarias a nombre del local.",
+    cipher: { answer: "SEGURO", shift: 3, hint: "Lo que Carmen cobraría con la muerte del chef. Seis letras.", clue: "Carmen había contratado un seguro de 'persona clave' sobre Mathieu dos meses antes, con el restaurante como único beneficiario." },
+    testimony: {
+      text: "El maître Tomás Ruiz declaró:\n\n\"La señora Carmen recibió personalmente una entrega especial de aceites esa tarde, algo que nunca hace: de eso se encarga la cocina. Como dueña, guardaba las fichas médicas de todo el personal, incluida la alergia del chef. Dos meses atrás le había hecho firmar a Mathieu una póliza enorme con el local como beneficiario. Esa noche la vi entrar a la cocina justo antes del servicio del plato estrella, con la excusa de 'felicitar al equipo'.\"",
+      question: "¿Qué combinación de hechos compromete más a la sospechosa?",
+      options: [
+        { text: "Recibió la entrega de aceites y entró a la cocina justo antes del plato fatal, conociendo la alergia del chef por su ficha médica", correct: true },
+        { text: "Mathieu firmó una póliza de persona clave dos meses antes de morir", correct: false },
+        { text: "Como dueña, Carmen guardaba las fichas médicas de todo el personal", correct: false },
+        { text: "Entró a la cocina con la excusa de felicitar al equipo", correct: false }
+      ],
+      explanation: "Manejar la entrega del aceite (el arma), conocer la alergia por la ficha médica (el conocimiento) y estar en la cocina en el momento exacto (la oportunidad) reúnen los tres elementos del crimen en Carmen."
+    }
+  }],
+
+  // ── #2 El Museo en la Oscuridad → Nadia Sanz (restauradora) ──
+  2: [{
+    culprit: 0,
+    riddleClue: "Varias obras eran copias perfectas. Solo una mano experta en técnicas de falsificación podía pintarlas con tal precisión.",
+    wsClue: "Las copias eran tan buenas que solo una restauradora con técnica de falsificadora podía haberlas creado y hecho pasar por originales.",
+    cipher: { answer: "COPIA", shift: 4, hint: "Lo que Nadia pintaba para reemplazar los originales. Cinco letras.", clue: "Nadia dominaba el envejecido artificial de lienzos. Las falsificaciones que reemplazaron a los originales salieron de su propio taller." },
+    testimony: {
+      text: "El técnico de seguridad Ramiro Vega declaró:\n\n\"Nadia se quedaba sola en el taller de restauración hasta la madrugada, varias veces por semana, con obras que oficialmente ya habían sido 'devueltas'. Encontré en su taller lienzos envejecidos artificialmente y pigmentos de fórmulas antiguas que no se usan en restauración normal. La noche del crimen, su tarjeta registró acceso a la bóveda a las 0:15, pero ella declaró haberse ido a las 22:00. La directora la había citado esa tarde 'para revisar discrepancias en el taller'.\"",
+      question: "¿Qué elemento implica más directamente a la restauradora?",
+      options: [
+        { text: "Su tarjeta registró acceso a la bóveda a las 0:15, contradiciendo su coartada de haberse ido a las 22:00", correct: true },
+        { text: "Tenía lienzos envejecidos y pigmentos antiguos en su taller", correct: false },
+        { text: "Se quedaba sola hasta la madrugada con obras ya 'devueltas'", correct: false },
+        { text: "La directora la había citado para revisar discrepancias", correct: false }
+      ],
+      explanation: "La contradicción entre su coartada y el registro de acceso a la bóveda a las 0:15 la ubica en la escena en el momento del crimen. Los materiales de falsificación explican el móvil."
+    }
+  }],
+
+  // ── #3 Tren Nocturno a Ningún Lugar → Lucía Torres (secretaria) ──
+  3: [{
+    culprit: 0,
+    riddleClue: "Sebastián viajaba a firmar el contrato. Su secretaria conocía cada detalle del negocio... y que él pensaba dejarla afuera del reparto.",
+    wsClue: "Quien conocía cada movimiento del empresario y acababa de ser excluida del bonus tenía motivo y acceso por igual.",
+    cipher: { answer: "TRAICION", shift: 3, hint: "Lo que la secretaria cometió contra su jefe. Ocho letras.", clue: "Lucía venía filtrando los términos del contrato a la competencia. Sebastián lo había descubierto y planeaba despedirla al llegar a Mendoza." },
+    testimony: {
+      text: "La auxiliar Marina Costa declaró:\n\n\"La señorita Lucía no figuraba en la lista de pasajeros, pero subió en la última estación con una llave de servicio del camarote del señor Ortiz: dijo que él se la había dado 'para los papeles'. Yo serví el whisky, pero fue ella quien insistió en llevárselo personalmente esa noche. Más temprano los escuché discutir: él le decía que 'después de Mendoza ya no la necesitaba'. A la mañana siguiente, la llave de servicio había desaparecido.\"",
+      question: "¿Qué detalle del testimonio resulta más incriminatorio?",
+      options: [
+        { text: "Tenía una llave del camarote e insistió en llevarle personalmente la bebida la noche del crimen", correct: true },
+        { text: "Subió al tren sin figurar en la lista de pasajeros", correct: false },
+        { text: "Discutieron porque él ya no la necesitaría después de Mendoza", correct: false },
+        { text: "La llave de servicio desapareció a la mañana siguiente", correct: false }
+      ],
+      explanation: "Tener acceso al camarote por la llave y ser quien manipuló y entregó la bebida envenenada le dio el medio y la oportunidad. El despido inminente aporta el motivo."
+    }
+  }],
+
+  // ── #4 La Hacienda del Silencio → Héctor Blanco (abogado) ──
+  4: [{
+    culprit: 3,
+    riddleClue: "Los documentos revelaban un faltante millonario. Pero alguien con conocimiento legal había alterado también el testamento para beneficiarse.",
+    wsClue: "El abogado redactó cada documento de la hacienda. Sabía mejor que nadie qué cláusula cambiar y cómo ocultar el rastro.",
+    cipher: { answer: "TESTAMENTO", shift: 4, hint: "El documento que el abogado manipuló en secreto. Diez letras.", clue: "Héctor Blanco se había nombrado albacea con honorarios desproporcionados, modificando el testamento sin consentimiento de Don Aurelio." },
+    testimony: {
+      text: "La contadora externa Patricia Suárez declaró:\n\n\"Las transferencias irregulares no solo pasaban por el administrador: cada una llevaba el aval legal del doctor Blanco, el abogado de la familia. Don Aurelio me confesó que había descubierto que Blanco modificó el testamento sin su consentimiento, agregándose como albacea con honorarios enormes. Iba a firmar un testamento nuevo el lunes. Blanco lo visitó la noche del domingo y se fue pasada la medianoche. El testamento nuevo nunca llegó a firmarse.\"",
+      question: "¿Qué hecho del testimonio compromete más al abogado?",
+      options: [
+        { text: "Avaló legalmente las transferencias fraudulentas y la muerte ocurrió justo antes de firmarse el testamento que lo excluía", correct: true },
+        { text: "Don Aurelio descubrió que Blanco había modificado el testamento sin su consentimiento", correct: false },
+        { text: "Blanco visitó la hacienda la noche del domingo y se fue pasada la medianoche", correct: false },
+        { text: "Blanco se había nombrado albacea con honorarios desproporcionados", correct: false }
+      ],
+      explanation: "El aval legal de cada transferencia fraudulenta lo hace cómplice del desfalco, y la muerte oportuna justo antes de la firma del nuevo testamento le da el motivo más urgente: si Aurelio firmaba, perdía todo y enfrentaba la cárcel."
+    }
+  }],
+
+  // ── #5 El Faro del Fin del Mundo → Pedro Nava 'El Tiburón' (contrabandista) ──
+  5: [{
+    culprit: 3,
+    riddleClue: "Mateo registraba cada barco que pasaba. Sus registros condenaban directamente al contrabandista que usaba esas rutas en la oscuridad.",
+    wsClue: "El contrabandista era quien más perdía si los registros del farero llegaban a las autoridades. Tenía que hacerlos desaparecer.",
+    cipher: { answer: "CONTRABANDO", shift: 6, hint: "La actividad de Pedro Nava en las rutas costeras. Once letras.", clue: "El farero había documentado quince incursiones nocturnas de la lancha sin matrícula del Tiburón en los últimos dos meses." },
+    testimony: {
+      text: "La turista Camille Dubois declaró (tras ser presionada):\n\n\"Esa tarde fotografié la costa. Una lancha sin matrícula ancló en la cala oculta al pie del faro alrededor de las 17:30. Un hombre corpulento, con tatuajes en los brazos, subió por el sendero hacia la torre. A las 18:40 oí un grito. El hombre bajó deprisa a las 19:00, arrojó unos cuadernos al mar y partió en la lancha. Reconocí su cara: es el que llaman 'el Tiburón'. Vi su lancha entrar y salir de esa cala varias veces esa semana.\"",
+      question: "¿Por qué el testimonio señala al contrabandista?",
+      options: [
+        { text: "Lo ubica subiendo al faro al momento de la muerte y arrojando al mar los cuadernos de registro", correct: true },
+        { text: "Su lancha sin matrícula entraba y salía de la cala oculta toda la semana", correct: false },
+        { text: "Es un hombre corpulento con tatuajes, fácil de reconocer", correct: false },
+        { text: "Camille tardó en hablar por miedo a represalias", correct: false }
+      ],
+      explanation: "Verlo subir al faro en el momento exacto de la muerte y deshacerse de los cuadernos de registro —la única prueba de su contrabando— une oportunidad y móvil de forma directa."
+    }
+  }],
+
+  // ── #6 La Biblioteca Prohibida → Simón Castro (anticuario) ──
+  6: [{
+    culprit: 1,
+    riddleClue: "El manuscrito valía millones en el mercado negro. Solo un anticuario con compradores internacionales podía colocarlo sin dejar rastro.",
+    wsClue: "Quien tenía la red de compradores privados podía convertir el manuscrito robado en una fortuna imposible de rastrear.",
+    cipher: { answer: "COMPRADOR", shift: 5, hint: "Lo que Simón conseguía para el manuscrito robado. Nueve letras.", clue: "Simón ya tenía un comprador internacional esperando la pieza. Solo le faltaba sacarla de la biblioteca sin testigos." },
+    testimony: {
+      text: "La estudiante Carla Nieto declaró:\n\n\"Simón Castro, el anticuario, visitó la biblioteca cuatro veces el último mes, siempre preguntando por el manuscrito del siglo XV 'para un cliente internacional'. Ernesto se negó y le pidió que no volviera. La noche de su muerte, el portero vio a Simón salir del sótano con un tubo de transporte de documentos bajo el abrigo, pese a que no estaba autorizado a bajar. Días antes, Ernesto me dijo que había recibido una oferta anónima de dos millones por la obra... y que la voz le sonó conocida.\"",
+      question: "¿Qué elemento compromete más al anticuario?",
+      options: [
+        { text: "El portero lo vio salir del sótano restringido con un tubo para transportar documentos la noche de la muerte", correct: true },
+        { text: "Visitó la biblioteca cuatro veces preguntando por el manuscrito", correct: false },
+        { text: "Ernesto recibió una oferta anónima cuya voz le sonó conocida", correct: false },
+        { text: "Ernesto le había pedido a Simón que no volviera", correct: false }
+      ],
+      explanation: "Salir del sótano restringido —al que no tenía acceso— con un tubo para transportar documentos, la misma noche de la muerte, lo ubica con la obra robada en mano en la escena del crimen."
+    }
+  }],
+
+  // ── #7 La Ópera Maldita → Maestro Caprio (director musical) ──
+  7: [{
+    culprit: 1,
+    riddleClue: "El rencor de un amor terminado. Ella amenazaba con destruir su carrera; él decidió silenciarla antes de que lo hiciera.",
+    wsClue: "Quien tuvo acceso a la dosis y un romance que terminó en amenazas guardaba rencor suficiente para todo.",
+    cipher: { answer: "VENGANZA", shift: 4, hint: "El móvil del director despechado. Ocho letras.", clue: "Aurora amenazaba con revelar el romance y arruinar al maestro Caprio. Su muerte en escena era una venganza fríamente calculada." },
+    testimony: {
+      text: "La vestuarista Adela Ponce declaró:\n\n\"El maestro Caprio entró al camerino de Aurora durante el primer entreacto, cosa que no acostumbra. Discutían en voz baja; alcancé a oír a Aurora decir 'si no me das el rol, cuento todo'. Él salió pálido. Como director, era el único que sabía con precisión de segundos cuándo llegaría el aria final: el veneno era de acción retardada y había que calcular el momento exacto. Cuando preparé el agua, la copa estaba en su lugar, pero el maestro había estado solo en el pasillo del camerino minutos antes.\"",
+      question: "¿Qué detalle compromete más al maestro?",
+      options: [
+        { text: "Como director conocía al segundo el momento del aria final —justo lo que requería el veneno retardado— y estuvo solo junto al camerino", correct: true },
+        { text: "Discutió con Aurora, que amenazaba con 'contar todo' si no le daba el rol", correct: false },
+        { text: "Entró al camerino durante el entreacto, algo que no acostumbraba", correct: false },
+        { text: "Salió pálido después de la discusión", correct: false }
+      ],
+      explanation: "El veneno de acción retardada exigía calcular con precisión el momento del aria. Solo el director, batuta en mano, dominaba ese tiempo exacto. Sumado a su acceso y al móvil de la amenaza, lo señala con claridad."
+    }
+  }],
+
+  // ── #8 El Laboratorio Secreto → Mariana Sosa (asistente) ──
+  8: [{
+    culprit: 0,
+    riddleClue: "El proyecto Helios valía cientos de millones. Pero alguien lo consideraba suyo por derecho: la mente real detrás del trabajo que Tarso firmaba.",
+    wsClue: "Quien tenía las llaves del laboratorio y años de trabajo robado tenía motivo y acceso sin necesidad de forzar nada.",
+    cipher: { answer: "AUTORIA", shift: 5, hint: "Lo que Tarso le robaba a Mariana durante años. Siete letras.", clue: "Tarso presentaba el trabajo de Mariana como propio. El premio internacional, otra vez, llevaría solo el nombre de él." },
+    testimony: {
+      text: "El guardia de seguridad Renato Vázquez declaró:\n\n\"Esa noche Mariana no firmó salida: tiene llaves propias y entra y sale sin registrarse, con autorización del propio Tarso. Los sensores no fueron forzados desde afuera: se apagaron desde la consola interna del laboratorio, que requiere una clave que solo el doctor y su asistente conocían. El sedante usado era del propio inventario del laboratorio. A las 2:00 la vi salir con su mochila habitual y una carpeta gruesa abrazada contra el pecho. Dos días antes los había oído gritar: ella le reclamaba que el premio llevaría solo el nombre de él.\"",
+      question: "¿Qué elemento implica más directamente a la asistente?",
+      options: [
+        { text: "Los sensores se apagaron desde la consola interna con una clave que solo ella y Tarso conocían, y usó el sedante del propio laboratorio", correct: true },
+        { text: "No firmó salida porque tiene llaves propias y entra sin registrarse", correct: false },
+        { text: "Salió a las 2:00 con una carpeta gruesa abrazada contra el pecho", correct: false },
+        { text: "Le reclamaba a gritos que el premio llevaría solo el nombre de él", correct: false }
+      ],
+      explanation: "Apagar los sensores desde la consola interna exigía una clave que solo Tarso y Mariana poseían. Combinado con el uso del sedante del propio laboratorio, revela un crimen cometido desde adentro, no por un agente externo."
+    }
+  }],
+
+  // ── #9 La Casa de Apuestas → Lola Reyes (croupier) ──
+  9: [{
+    culprit: 0,
+    riddleClue: "La herencia no era solo de sangre. Don Vito había prometido parte de su fortuna a alguien muy cercano... y luego se arrepintió.",
+    wsClue: "Quien fue prometida parte de la fortuna y conocía las rutinas de la sala VIP tenía motivo y acceso por igual.",
+    cipher: { answer: "AMANTE", shift: 6, hint: "Lo que era Lola para Don Vito, en secreto. Seis letras.", clue: "Don Vito había prometido incluir a Lola en su testamento. Esa semana ordenó a su escribano 'sacar a alguien' de los papeles." },
+    testimony: {
+      text: "El gerente nocturno Carlo Beltrán declaró:\n\n\"Lola se quedó después del cierre, algo habitual desde que se rumoreaba su relación con Don Vito. Esa semana, él le había dicho a su escribano que quería 'sacar a alguien del testamento'. En el cesto de su oficina apareció después un codicilo roto con el nombre de Lola. Ella conocía la combinación de la caja: lo había visto abrirla decenas de veces. Las cámaras se apagaron con el protocolo interno que ella aprendió en años de sala VIP. Su tarjeta marcó salida recién a las 0:10.\"",
+      question: "¿Qué combinación de hechos compromete más a la sospechosa?",
+      options: [
+        { text: "El codicilo roto que la quitaba del testamento, su conocimiento de la combinación y del protocolo de cámaras, y su salida a las 0:10", correct: true },
+        { text: "Se quedó después del cierre, como era habitual en ella", correct: false },
+        { text: "Se rumoreaba que era amante de Don Vito desde hacía tiempo", correct: false },
+        { text: "Había visto abrir la caja fuerte decenas de veces", correct: false }
+      ],
+      explanation: "El codicilo roto le da el móvil urgente —estaba por perder la herencia prometida—; conocer la combinación y el protocolo de cámaras le da el medio; y su salida tardía, la oportunidad."
+    }
+  }],
+
+  // ── #10 El Yate Naufragado → Dr. Gabriel Sterling (abogado) ──
+  10: [{
+    culprit: 2,
+    riddleClue: "El abogado había redactado ese prenup y se beneficiaba de él. Si Alessandro lo anulaba el lunes, perdía el control sobre toda la fortuna.",
+    wsClue: "Quien manejaba los documentos legales y perdía su influencia con los cambios del lunes tenía un motivo desesperado.",
+    cipher: { answer: "TESTAMENTO", shift: 2, hint: "El documento que Sterling no quería que se firmara. Diez letras.", clue: "Alessandro iba a firmar un nuevo testamento el lunes que apartaba a Sterling de la administración de su fortuna y exponía sus manejos." },
+    testimony: {
+      text: "La camarera personal Lupita Cárdenas declaró:\n\n\"El doctor Sterling no estaba invitado a quedarse a dormir, pero esa noche no bajó del yate: lo vi en la cubierta cerca de la cabina principal pasada la 1:00, con un maletín de documentos. A las 3:40 oí correr el agua de la bañera mucho tiempo. A la mañana siguiente, la caja fuerte de la cabina estaba abierta y faltaban carpetas legales que el señor guardaba ahí. El doctor desembarcó muy temprano, antes que nadie, con su maletín más abultado que la noche anterior.\"",
+      question: "¿Qué detalle resulta más decisivo contra el abogado?",
+      options: [
+        { text: "Permaneció junto a la cabina y a la mañana faltaban carpetas legales de la caja fuerte, mientras él desembarcaba con el maletín más cargado", correct: true },
+        { text: "No estaba invitado a quedarse a dormir esa noche", correct: false },
+        { text: "Se oyó correr el agua de la bañera durante mucho tiempo a las 3:40", correct: false },
+        { text: "Llevaba un maletín de documentos en la cubierta", correct: false }
+      ],
+      explanation: "Su permanencia junto a la cabina, la desaparición de las carpetas legales de la caja fuerte y el maletín más cargado al desembarcar revelan que mató para apoderarse de los documentos que lo incriminaban antes de la firma del lunes."
+    }
+  }],
+
+  // ── #11 La Mansión Embrujada → Onésimo Brun (mayordomo) ──
+  11: [{
+    culprit: 2,
+    riddleClue: "El testamento modificado no solo agregó un nombre: borró otro. Cuarenta años de servicio quedaron, de golpe, en nada.",
+    wsClue: "Quien encendía las velas se movía libre en la oscuridad y conocía cada rincón de la mansión como nadie.",
+    cipher: { answer: "LEGADO", shift: 7, hint: "Lo que el mayordomo perdió tras 40 años de servicio. Seis letras.", clue: "El nuevo testamento eliminó la pensión vitalicia que Sebastián le había prometido a Onésimo. Cuatro décadas de lealtad, borradas de un plumazo." },
+    testimony: {
+      text: "Madame Esmeralda declaró:\n\n\"Durante el ritual apagamos las luces y el círculo se tomó de las manos. Pero Onésimo, el mayordomo, no formaba parte del círculo: se movía en silencio encendiendo y apagando velas, como le habían indicado. En la oscuridad, sus pasos se acercaron a la cabecera donde estaba Sebastián. El abrecartas provenía del escritorio del señor, una habitación cerrada con llave a la que solo el mayordomo tenía acceso permanente. Cuando volvió la luz, Onésimo ya estaba en su rincón, demasiado quieto, con las manos detrás de la espalda.\"",
+      question: "¿Qué hecho del testimonio resulta más decisivo?",
+      options: [
+        { text: "Era el único que se movía libremente en la oscuridad y el único con acceso al escritorio de donde salió el arma", correct: true },
+        { text: "Sus pasos se acercaron a la cabecera donde estaba Sebastián", correct: false },
+        { text: "Cuando volvió la luz estaba demasiado quieto, con las manos tras la espalda", correct: false },
+        { text: "No formaba parte del círculo tomado de las manos", correct: false }
+      ],
+      explanation: "Mientras todos se sujetaban las manos a oscuras, solo Onésimo podía moverse. Y solo él tenía acceso al escritorio cerrado de donde provino el abrecartas. Movilidad y acceso al arma lo señalan inequívocamente."
+    }
+  }],
+
+  // ── #12 El Estadio Vacío → Diego Russo (capitán) ──
+  12: [{
+    culprit: 0,
+    riddleClue: "El libro no solo apuntaba a la dirigencia. Nombraba jugadores que vendían partidos. Uno de ellos no podía permitir que se publicara.",
+    wsClue: "Quien iba a ser borrado del equipo y además aparecía nombrado en el libro tenía un doble motivo para silenciar al Profesor.",
+    cipher: { answer: "ARREGLO", shift: 4, hint: "Lo que el libro probaría sobre Diego: partidos vendidos. Siete letras.", clue: "El capítulo cinco del libro detallaba los partidos que Diego había arreglado con apostadores. Su carrera y su libertad pendían de que ese libro nunca saliera." },
+    testimony: {
+      text: "El utilero Don Mario Cordone declaró:\n\n\"Los jugadores se fueron rápido tras la derrota, pero Diego volvió al vestuario 'a buscar su reloj' cerca de las 23:00, cuando creía que ya no quedaba nadie. Yo estaba en el depósito contiguo. Escuché al Profesor decirle que no solo lo borraba del equipo, sino que su nombre 'estaba en el capítulo cinco'. Hubo un golpe seco y silencio. Diego salió apurado con la campera puesta al revés y una toalla envuelta en la mano derecha. El trofeo Apertura apareció roto junto al cuerpo, en las duchas.\"",
+      question: "¿Qué elemento implica más directamente al capitán?",
+      options: [
+        { text: "Volvió a escondidas cuando creía que no quedaba nadie, discutió por estar 'en el capítulo cinco' y salió cubriéndose la mano con una toalla", correct: true },
+        { text: "El Profesor iba a borrarlo del equipo titular", correct: false },
+        { text: "Su nombre aparecía en el libro que el DT iba a publicar", correct: false },
+        { text: "Salió con la campera puesta al revés", correct: false }
+      ],
+      explanation: "Regresar a escondidas, la confrontación por aparecer en el libro y salir cubriéndose la mano con una toalla —ocultando sangre o una lesión— lo ubican como autor del golpe mortal. El doble móvil refuerza la conclusión."
+    }
+  }],
+
+  // ── #13 El Convento del Silencio → Sr. Casas (donante anónimo) ──
+  13: [{
+    culprit: 2,
+    riddleClue: "Las donaciones en efectivo del Sr. Casas no eran caridad: eran dinero que necesitaba limpiar. La denuncia al obispado lo expondría todo.",
+    wsClue: "El donante anónimo entregaba sumas en efectivo que la denuncia convertiría en prueba de un delito mucho mayor.",
+    cipher: { answer: "LAVADO", shift: 3, hint: "Lo que Casas hacía con su dinero a través del convento. Seis letras.", clue: "Casas usaba las donaciones del convento para lavar dinero de origen ilícito. La auditoría de la Madre estaba a punto de destapar el esquema completo." },
+    testimony: {
+      text: "La doncella Inés Vega declaró:\n\n\"El Sr. Casas vino esa noche, fuera de su visita mensual habitual. No entró por la puerta principal sino por el portón lateral del huerto, que casi nadie usa pero que él conocía de sus visitas al capellán. Lo vi cruzar hacia la capilla cerca de las 22:40. La Madre había dicho que su denuncia 'mencionaría también a los benefactores cuyo dinero no tenía origen claro'. A la mañana encontré, junto al altar, un pañuelo fino con las iniciales 'R.C.' manchado, y huellas de barro del huerto que llegaban hasta el reclinatorio.\"",
+      question: "¿Qué elemento resulta más concluyente contra el donante?",
+      options: [
+        { text: "El pañuelo con sus iniciales junto al altar y el rastro de barro del portón lateral que solo él usaba, llegando hasta la escena", correct: true },
+        { text: "Vino esa noche fuera de su visita mensual habitual", correct: false },
+        { text: "La denuncia mencionaría a los benefactores de dinero sin origen claro", correct: false },
+        { text: "Entró por el portón lateral del huerto en vez de la puerta principal", correct: false }
+      ],
+      explanation: "El pañuelo con sus iniciales en la escena es evidencia material directa, y el rastro de barro del portón que solo él usaba traza su camino exacto hasta el altar. El móvil: la denuncia expondría el lavado de su dinero."
+    }
+  }],
+
+};
+
+
 // ─── Helpers de datos ────────────────────────────────────────────────────────
 
 function getDayNumber() {

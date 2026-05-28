@@ -137,6 +137,31 @@ function executeTransition() {
   if (fn) fn();
 }
 
+// Elige qué variante de culpable usar hoy. Determinista por día, escalonado
+// por escenario para que cada ciclo de 14 días rote a un culpable distinto.
+function pickVariantIndex(dayNum, scenario) {
+  const variants = (typeof CRIME_VARIANTS !== 'undefined' && CRIME_VARIANTS[scenario.id]) || [];
+  const total = 1 + variants.length;
+  if (total <= 1) return 0;
+  const cycle = Math.floor(dayNum / CRIMES.length);
+  return ((cycle + scenario.id) % total + total) % total;
+}
+
+// Devuelve una COPIA del escenario con el culpable y las pistas de la variante
+// aplicadas. La variante 0 es el escenario base (sin cambios). Nunca muta CRIMES.
+function applyVariant(scenario, idx) {
+  const variants = (typeof CRIME_VARIANTS !== 'undefined' && CRIME_VARIANTS[scenario.id]) || [];
+  if (idx === 0 || idx > variants.length) return scenario;
+  const v = variants[idx - 1];
+  const challenges = scenario.challenges.map(c => ({ ...c }));
+  if (v.riddleClue) challenges[0] = { ...challenges[0], clue: v.riddleClue };
+  if (v.wsClue)     challenges[1] = { ...challenges[1], clue: v.wsClue };
+  if (v.wsWords)    challenges[1] = { ...challenges[1], words: v.wsWords };
+  if (v.cipher)     challenges[2] = { ...challenges[2], ...v.cipher };
+  if (v.testimony)  challenges[3] = { ...challenges[3], ...v.testimony };
+  return { ...scenario, culprit: v.culprit, challenges, _variant: idx };
+}
+
 function buildSuspectOrder(dayNum, count) {
   const rng = new SeededRandom(dayNum * 97 + 31);
   const order = Array.from({ length: count }, (_, i) => i);
@@ -1207,6 +1232,8 @@ function startGame() {
 function init() {
   STATE.dayNum    = getDayNumber();
   STATE.scenario  = getTodaysCrime();
+  STATE.variantIdx = pickVariantIndex(STATE.dayNum, STATE.scenario);
+  STATE.scenario  = applyVariant(STATE.scenario, STATE.variantIdx);
   STATE.suspectOrder = buildSuspectOrder(STATE.dayNum, STATE.scenario.suspects.length);
 
   const saved = loadSavedResult();
