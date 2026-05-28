@@ -1,6 +1,6 @@
 // =====================================================
 //  EL CRIMEN DEL DÍA — Datos de escenarios
-//  7 crímenes que rotan por día
+//  14 crímenes que rotan por día
 // =====================================================
 
 const CRIMES = [
@@ -81,12 +81,12 @@ const CRIMES = [
       detail: "Murió en la cocina tras probar su propio plato estrella. Tenía alergia severa al maní, información que solo el equipo íntimo conocía."
     },
     suspects: [
-      { name: "Valentina Cruz",   role: "Sous-chef",           detail: "32 años. Lleva 6 años esperando ser ascendida a chef principal. Aplicó tres veces.", emoji: "👩‍🍳" },
       { name: "Rodrigo Salinas",  role: "Crítico gastronómico", detail: "55 años. Tenía una guerra pública con Mathieu desde que destruyó su anterior restaurante.", emoji: "🧐" },
+      { name: "Valentina Cruz",   role: "Sous-chef",           detail: "32 años. Lleva 6 años esperando ser ascendida a chef principal. Aplicó tres veces.", emoji: "👩‍🍳" },
       { name: "Carmen López",     role: "Dueña del local",     detail: "60 años. Perdería el restaurante si Mathieu se iba; tenía seguros de vida a su nombre.", emoji: "👩‍💼" },
       { name: "Luigi Ferrante",   role: "Proveedor",           detail: "44 años. Mathieu descubrió que vendía ingredientes vencidos y amenazó con denunciarlo.", emoji: "🚚" }
     ],
-    culprit: 0,
+    culprit: 1,
     challenges: [
       {
         type: "riddle",
@@ -144,12 +144,12 @@ const CRIMES = [
       detail: "Hallada al pie de la sala de exhibición principal. Tenía en su mano un trozo de lienzo... de una pintura falsa."
     },
     suspects: [
-      { name: "Antonio Vidal",  role: "Curador jefe",         detail: "50 años. Tenía acceso a todas las obras y conocía el valor de cada una.", emoji: "🎨" },
-      { name: "Nadia Sanz",     role: "Restauradora",         detail: "38 años. Experta en técnicas de falsificación artística. Conocida en el submundo del arte.", emoji: "🖼️" },
-      { name: "Tomás Gutiérrez",role: "Guardia nocturno",     detail: "45 años. Descubierto durmiendo en su turno tres veces. Desesperado por dinero.", emoji: "🔦" },
-      { name: "Hugo Rivas",     role: "Coleccionista privado", detail: "62 años. Intentó comprar varias obras que el museo se negó a vender.", emoji: "💼" }
+      { name: "Nadia Sanz",      role: "Restauradora",         detail: "38 años. Experta en técnicas de falsificación artística. Conocida en el submundo del arte.", emoji: "🖼️" },
+      { name: "Tomás Gutiérrez", role: "Guardia nocturno",     detail: "45 años. Descubierto durmiendo en su turno tres veces. Desesperado por dinero.", emoji: "🔦" },
+      { name: "Antonio Vidal",   role: "Curador jefe",         detail: "50 años. Tenía acceso a todas las obras y conocía el valor de cada una.", emoji: "🎨" },
+      { name: "Hugo Rivas",      role: "Coleccionista privado", detail: "62 años. Intentó comprar varias obras que el museo se negó a vender.", emoji: "💼" }
     ],
-    culprit: 0,
+    culprit: 2,
     challenges: [
       {
         type: "riddle",
@@ -165,7 +165,7 @@ const CRIMES = [
         type: "wordsearch",
         title: "Sopa de Letras",
         instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
-        words: ["CUADRO", "ROBO", "FRAUDE", "MUSEO", "SUBASTA", "FIRMA"],
+        words: ["CUADRO", "PINTURA", "FRAUDE", "MUSEO", "SUBASTA", "FIRMA"],
         clue: "Las firmas de los artistas en los cuadros originales eran las que más valían en el mercado negro."
       },
       {
@@ -208,11 +208,11 @@ const CRIMES = [
     },
     suspects: [
       { name: "Lucía Torres",    role: "Secretaria ejecutiva", detail: "34 años. Conocía todos los movimientos de Sebastián. Acababa de ser excluida del bonus anual.", emoji: "💼" },
-      { name: "Fernando Pizarro",role: "Rival empresarial",    detail: "48 años. El contrato que Sebastián iba a firmar lo arruinaría a él. Viajaba en el mismo tren.", emoji: "😤" },
       { name: "Marina Costa",    role: "Auxiliar de viaje",    detail: "29 años. Sirvió la última copa al empresario. No tiene coartada sólida.", emoji: "🚂" },
-      { name: "Jorge Fuentes",   role: "Revisor",              detail: "58 años. Tiene antecedentes penales sellados. Conocía el vagón mejor que nadie.", emoji: "🎫" }
+      { name: "Jorge Fuentes",   role: "Revisor",              detail: "58 años. Tiene antecedentes penales sellados. Conocía el vagón mejor que nadie.", emoji: "🎫" },
+      { name: "Fernando Pizarro",role: "Rival empresarial",    detail: "48 años. El contrato que Sebastián iba a firmar lo arruinaría a él. Viajaba en el mismo tren.", emoji: "😤" }
     ],
-    culprit: 1,
+    culprit: 3,
     challenges: [
       {
         type: "riddle",
@@ -270,12 +270,12 @@ const CRIMES = [
       detail: "Encontrado en su estudio con documentos financieros en las manos. Causa de muerte: paro cardíaco inducido. Los documentos mostraban irregularidades graves."
     },
     suspects: [
-      { name: "Isabela Montoya", role: "Hija única",              detail: "45 años. Heredaría la hacienda. Tiene conflictos con el padre desde hace años.", emoji: "👩" },
       { name: "Cruz Ramírez",    role: "Administrador",           detail: "52 años. Maneja las cuentas de la hacienda hace 20 años. Acceso total a los fondos.", emoji: "📊" },
+      { name: "Isabela Montoya", role: "Hija única",              detail: "45 años. Heredaría la hacienda. Tiene conflictos con el padre desde hace años.", emoji: "👩" },
       { name: "León Aguilar",    role: "Vecino y rival de tierras",detail: "60 años. Tiene disputa legal por los límites del territorio desde hace décadas.", emoji: "🤠" },
       { name: "Héctor Blanco",   role: "Abogado de la familia",   detail: "55 años. Redactó el testamento. Sabe exactamente qué hereda cada uno.", emoji: "⚖️" }
     ],
-    culprit: 1,
+    culprit: 0,
     challenges: [
       {
         type: "riddle",
@@ -291,7 +291,7 @@ const CRIMES = [
         type: "wordsearch",
         title: "Sopa de Letras",
         instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
-        words: ["HACIENDA", "FONDOS", "TIERRA", "ROBO", "HERENCIA", "CONTADOR"],
+        words: ["HACIENDA", "FONDOS", "TIERRA", "HURTO", "HERENCIA", "CONTADOR"],
         clue: "El administrador era el único con acceso diario a los fondos durante todos esos años."
       },
       {
@@ -354,7 +354,7 @@ const CRIMES = [
         type: "wordsearch",
         title: "Sopa de Letras",
         instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
-        words: ["FARO", "BARCO", "TRAFICO", "MARINA", "SECRETO", "NOCHE"],
+        words: ["FARO", "BARCO", "TRAFICO", "MARINA", "CARTA", "NOCHE"],
         clue: "El inspector naval era la única autoridad que podía encubrir el tráfico ilegal de barcos."
       },
       {
@@ -397,11 +397,11 @@ const CRIMES = [
     },
     suspects: [
       { name: "Dra. Carla Nieto",    role: "Estudiante de doctorado", detail: "28 años. Investiga el manuscrito robado para su tesis. Acceso frecuente a la sala restringida.", emoji: "📚" },
-      { name: "Dr. Alejandro Prado", role: "Académico y experto",     detail: "55 años. Máxima autoridad en manuscritos medievales. Tasó la obra en más de 2 millones.", emoji: "🎓" },
       { name: "Simón Castro",        role: "Anticuario",              detail: "48 años. Tiene conexiones con compradores privados internacionales. Visitó la semana anterior.", emoji: "🏺" },
+      { name: "Dr. Alejandro Prado", role: "Académico y experto",     detail: "55 años. Máxima autoridad en manuscritos medievales. Tasó la obra en más de 2 millones.", emoji: "🎓" },
       { name: "Vera Molina",         role: "Periodista de cultura",   detail: "35 años. Investigaba una nota sobre objetos robados de museos. Buscaba fuentes internas.", emoji: "📰" }
     ],
-    culprit: 1,
+    culprit: 2,
     challenges: [
       {
         type: "riddle",
@@ -417,7 +417,7 @@ const CRIMES = [
         type: "wordsearch",
         title: "Sopa de Letras",
         instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
-        words: ["LIBRO", "ARCHIVO", "ROBO", "FIRMA", "SECRETO", "ERUDITO"],
+        words: ["LIBRO", "ARCHIVO", "ENGANO", "FIRMA", "COPIA", "ERUDITO"],
         clue: "Solo un erudito podía falsificar el manuscrito con suficiente calidad para engañar al propio bibliotecario durante meses."
       },
       {
@@ -524,10 +524,10 @@ const CRIMES = [
     suspects: [
       { name: "Mariana Sosa",     role: "Asistente principal",   detail: "29 años. Trabajó 7 años con Tarso. Él presentaba el trabajo de ella como propio. Tenía las llaves del laboratorio.", emoji: "👩‍🔬" },
       { name: "Dr. Konrad Heyer", role: "Competidor académico",  detail: "62 años. Su instituto rival quedaría sin financiación si Helios se publicaba. Estuvo en la conferencia esa noche.", emoji: "👨‍⚕️" },
-      { name: "Olga Petrova",     role: "Visitante extranjera",  detail: "44 años. Se presentó como inversora hace dos semanas. La inteligencia industrial la tiene fichada.", emoji: "🕴️" },
-      { name: "Pablo Mendez",     role: "Becario reciente",      detail: "24 años. Tres meses en el equipo. Coartada: estaba estudiando, pero solo. Ningún testigo.", emoji: "👨‍🎓" }
+      { name: "Pablo Mendez",     role: "Becario reciente",      detail: "24 años. Tres meses en el equipo. Coartada: estaba estudiando, pero solo. Ningún testigo.", emoji: "👨‍🎓" },
+      { name: "Olga Petrova",     role: "Visitante extranjera",  detail: "44 años. Se presentó como inversora hace dos semanas. La inteligencia industrial la tiene fichada.", emoji: "🕴️" }
     ],
-    culprit: 2,
+    culprit: 3,
     challenges: [
       {
         type: "riddle",
@@ -543,7 +543,7 @@ const CRIMES = [
         type: "wordsearch",
         title: "Sopa de Letras",
         instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
-        words: ["FORMULA", "MUESTRA", "ESPIA", "SECRETO", "PATENTE", "ROBO"],
+        words: ["FORMULA", "MUESTRA", "ESPIA", "AGENTE", "PATENTE", "CODIGO"],
         clue: "Solo alguien externo al instituto tenía la motivación para robar la fórmula y huir antes del amanecer."
       },
       {
@@ -587,10 +587,10 @@ const CRIMES = [
     suspects: [
       { name: "Lola Reyes",          role: "Croupier estrella",       detail: "32 años. Se rumoreaba que era amante de Don Vito. Conocía las rutinas y horarios de la sala VIP.", emoji: "🎰" },
       { name: "Maximiliano Borges",  role: "Jugador profesional",     detail: "40 años. Debía al casino más de dos millones. Don Vito había amenazado con cobrarlo 'al estilo viejo'.", emoji: "🃏" },
-      { name: "Aníbal Quintero",     role: "Contador del casino",     detail: "55 años. Acceso total a las cuentas. Don Vito lo investigaba por presunto desvío de fondos.", emoji: "💰" },
-      { name: "Sofía Salvatore",     role: "Hermana y exsocia",       detail: "50 años. Lo demandó hace años por la herencia familiar. Acaba de regresar a la ciudad sin previo aviso.", emoji: "👩‍💼" }
+      { name: "Sofía Salvatore",     role: "Hermana y exsocia",       detail: "50 años. Lo demandó hace años por la herencia familiar. Acaba de regresar a la ciudad sin previo aviso.", emoji: "👩‍💼" },
+      { name: "Aníbal Quintero",     role: "Contador del casino",     detail: "55 años. Acceso total a las cuentas. Don Vito lo investigaba por presunto desvío de fondos.", emoji: "💰" }
     ],
-    culprit: 3,
+    culprit: 2,
     challenges: [
       {
         type: "riddle",
@@ -648,12 +648,12 @@ const CRIMES = [
       detail: "Hallado al amanecer en su cabina. Causa real: asfixia por inmersión, pero su ropa estaba seca. Fue ahogado en la bañera y luego trasladado a la cama."
     },
     suspects: [
-      { name: "Capitán Marchetti", role: "Capitán del yate",         detail: "55 años. 30 años al servicio. Recién degradado por Alessandro. Conocía cada centímetro del barco.", emoji: "⚓" },
       { name: "Bianca Reali",      role: "Esposa joven (3 años)",    detail: "32 años. Prenup brutal: si Alessandro moría antes de los 5 años de matrimonio, ella heredaba todo.", emoji: "💎" },
+      { name: "Capitán Marchetti", role: "Capitán del yate",         detail: "55 años. 30 años al servicio. Recién degradado por Alessandro. Conocía cada centímetro del barco.", emoji: "⚓" },
       { name: "Dr. Gabriel Sterling", role: "Abogado personal",       detail: "58 años. Sabía de cambios secretos al testamento que estaban por firmarse. Habría perdido influencia.", emoji: "⚖️" },
       { name: "Helena Forte",      role: "Periodista de sociedad",   detail: "38 años. Invitada de último momento. Investigaba un fraude relacionado con la flota Bertoli.", emoji: "📺" }
     ],
-    culprit: 1,
+    culprit: 0,
     challenges: [
       {
         type: "riddle",
@@ -775,11 +775,11 @@ const CRIMES = [
     },
     suspects: [
       { name: "Diego Russo",      role: "Capitán del equipo",         detail: "30 años. El DT iba a borrarlo del equipo titular por bajo rendimiento y filtraciones a la prensa.", emoji: "⚽" },
-      { name: "Augusto Petersen", role: "Presidente del club",        detail: "60 años. El libro del DT iba a destapar años de coimas, transferencias truchas y vínculos oscuros. Su carrera terminaría.", emoji: "🏛️" },
       { name: "Aldo Pizarro",     role: "Árbitro del clásico",        detail: "50 años. Cobró un penal inexistente que selló el partido. Visto discutiendo con el DT al salir del campo.", emoji: "🟨" },
+      { name: "Augusto Petersen", role: "Presidente del club",        detail: "60 años. El libro del DT iba a destapar años de coimas, transferencias truchas y vínculos oscuros. Su carrera terminaría.", emoji: "🏛️" },
       { name: "Felipe Aroza",     role: "Kinesiólogo del plantel",    detail: "40 años. Acceso permanente al vestuario y a los suplementos. Despedido por el DT semanas atrás.", emoji: "💪" }
     ],
-    culprit: 1,
+    culprit: 2,
     challenges: [
       {
         type: "riddle",
@@ -838,11 +838,11 @@ const CRIMES = [
     },
     suspects: [
       { name: "Sor Beatriz Núñez", role: "Novicia rebelde",       detail: "24 años. Iba a ser expulsada por cuestionar abiertamente las reglas. Llevaba tres meses interna a la fuerza.", emoji: "👼" },
-      { name: "Padre Anselmo Cruz",role: "Capellán del convento",  detail: "55 años. Manejaba personalmente las cuentas de donaciones desde hacía 12 años. Sin auditorías externas.", emoji: "✝️" },
       { name: "Inés Vega",         role: "Doncella del convento", detail: "35 años. Cocinaba y limpiaba todas las dependencias. Conocía cada recoveco del edificio.", emoji: "🌾" },
-      { name: "Sr. Casas",         role: "Donante anónimo",       detail: "60 años. Aportaba sumas grandes y siempre en efectivo. Visitaba al capellán una vez al mes en privado.", emoji: "💼" }
+      { name: "Sr. Casas",         role: "Donante anónimo",       detail: "60 años. Aportaba sumas grandes y siempre en efectivo. Visitaba al capellán una vez al mes en privado.", emoji: "💼" },
+      { name: "Padre Anselmo Cruz",role: "Capellán del convento",  detail: "55 años. Manejaba personalmente las cuentas de donaciones desde hacía 12 años. Sin auditorías externas.", emoji: "✝️" }
     ],
-    culprit: 1,
+    culprit: 3,
     challenges: [
       {
         type: "riddle",
