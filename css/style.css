@@ -1485,7 +1485,6 @@ a:hover { text-decoration: underline; }
   justify-content: center;
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-  position: fixed;
 }
 
 .notebook-fab:hover {
