@@ -42,6 +42,9 @@ const STATE = {
 
   // Orden aleatorio de sospechosos para este día (display index → original index)
   suspectOrder: null,
+
+  // Función pendiente para la pantalla de transición
+  pendingTransition: null,
 };
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -75,6 +78,12 @@ function normalize(str) {
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .trim();
+}
+
+function executeTransition() {
+  const fn = STATE.pendingTransition;
+  STATE.pendingTransition = null;
+  if (fn) fn();
 }
 
 // Mezcla los sospechosos para este día. Usa seed basada en dayNum para que
@@ -235,13 +244,14 @@ function renderIntro() {
 // ── Pantalla: Transición entre desafíos ──────────────────────────────────────
 
 function renderTransition(clueText, nextFn) {
+  STATE.pendingTransition = nextFn;
   setScreen(`
     <div class="screen screen-transition">
       <div id="timer" class="timer timer-float">${STATE.startTime ? '⏱ ' + formatTime(Date.now() - STATE.startTime) : ''}</div>
       <div class="transition-icon">🔑</div>
       <div class="transition-title">¡Pista Desbloqueada!</div>
       <div class="transition-clue">${clueText}</div>
-      <button class="btn-next" onclick="(${nextFn.toString()})()">Continuar →</button>
+      <button class="btn-next" onclick="executeTransition()">Continuar →</button>
     </div>
   `);
 }
