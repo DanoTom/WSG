@@ -274,7 +274,7 @@ body::before {
 
 .suspect-portrait {
   width: 100%;
-  aspect-ratio: 4/5;
+  aspect-ratio: 1/1;
   background-color: var(--bg2);
   background-size: 300% 200%;
   background-position: 0% 0%;
@@ -941,7 +941,7 @@ body::before {
 
 .accuse-portrait {
   width: 100%;
-  aspect-ratio: 3/4;
+  aspect-ratio: 1/1;
   background-color: var(--bg2);
   background-size: 300% 200%;
   background-position: 0% 0%;
