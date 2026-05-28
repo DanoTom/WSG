@@ -50,6 +50,61 @@ const ACCUSATION_SCORE = 200;
 const MAX_TIME_BONUS = 200;
 const TIME_BONUS_CUTOFF_MS = 20 * 60 * 1000;
 
+// ── Retratos de sospechosos (sprite-sheet: s=hoja 1-3, r=fila 0-1, c=col 0-2) ─
+
+const SUSPECT_IMAGES = {
+  // #0 Muerte en la Villa Roja
+  'Marco Alvarado':       {s:2,r:0,c:1}, 'Carmen Delgado':   {s:2,r:1,c:1},
+  'Rafael Herrera':       {s:1,r:1,c:0}, 'Dra. Inés Morales':{s:3,r:1,c:1},
+  // #1 El Banquete de las Mentiras
+  'Rodrigo Salinas':      {s:3,r:1,c:0}, 'Valentina Cruz':   {s:3,r:0,c:0},
+  'Carmen López':         {s:1,r:0,c:2}, 'Luigi Ferrante':   {s:1,r:0,c:1},
+  // #2 El Museo en la Oscuridad
+  'Nadia Sanz':           {s:2,r:1,c:1}, 'Tomás Gutiérrez':  {s:2,r:1,c:2},
+  'Antonio Vidal':        {s:3,r:1,c:0}, 'Hugo Rivas':       {s:2,r:0,c:1},
+  // #3 Tren Nocturno a Ningún Lugar
+  'Lucía Torres':         {s:1,r:0,c:2}, 'Marina Costa':     {s:3,r:0,c:2},
+  'Jorge Fuentes':        {s:3,r:1,c:0}, 'Fernando Pizarro': {s:2,r:0,c:1},
+  // #4 La Hacienda del Silencio
+  'Cruz Ramírez':         {s:1,r:0,c:1}, 'Isabela Montoya':  {s:1,r:0,c:0},
+  'León Aguilar':         {s:2,r:1,c:2}, 'Héctor Blanco':    {s:2,r:0,c:1},
+  // #5 El Faro del Fin del Mundo
+  'Concha Villanueva':    {s:1,r:1,c:1}, 'Ricardo Espinoza': {s:2,r:1,c:2},
+  'Camille Dubois':       {s:2,r:0,c:2}, 'Pedro Nava':       {s:3,r:0,c:1},
+  // #6 La Biblioteca Prohibida
+  'Dra. Carla Nieto':     {s:2,r:1,c:1}, 'Simón Castro':     {s:3,r:1,c:0},
+  'Dr. Alejandro Prado':  {s:2,r:0,c:1}, 'Vera Molina':      {s:1,r:0,c:2},
+  // #7 La Ópera Maldita
+  'Claudia Fontana':      {s:2,r:0,c:0}, 'Maestro Caprio':   {s:3,r:1,c:0},
+  'Vincent Marlow':       {s:2,r:0,c:1}, 'Esteban Rojas':    {s:1,r:1,c:2},
+  // #8 El Laboratorio Secreto
+  'Mariana Sosa':         {s:3,r:1,c:1}, 'Dr. Konrad Heyer': {s:3,r:1,c:0},
+  'Pablo Mendez':         {s:1,r:1,c:2}, 'Olga Petrova':     {s:3,r:0,c:2},
+  // #9 La Casa de Apuestas
+  'Lola Reyes':           {s:1,r:0,c:0}, 'Maximiliano Borges':{s:3,r:1,c:2},
+  'Sofía Salvatore':      {s:2,r:0,c:2}, 'Aníbal Quintero':  {s:3,r:1,c:0},
+  // #10 El Yate Naufragado
+  'Bianca Reali':         {s:1,r:0,c:0}, 'Capitán Marchetti':{s:2,r:1,c:0},
+  'Dr. Gabriel Sterling': {s:2,r:0,c:1}, 'Helena Forte':     {s:1,r:0,c:2},
+  // #11 La Mansión Embrujada
+  'Madame Esmeralda':     {s:3,r:0,c:2}, 'Tomás Quevedo':    {s:3,r:0,c:1},
+  'Onésimo Brun':         {s:3,r:1,c:0}, 'Aurelia Vargas':   {s:2,r:0,c:0},
+  // #12 El Estadio Vacío
+  'Diego Russo':          {s:3,r:1,c:2}, 'Aldo Pizarro':     {s:1,r:0,c:1},
+  'Augusto Petersen':     {s:2,r:0,c:1}, 'Felipe Aroza':     {s:1,r:1,c:2},
+  // #13 El Convento del Silencio
+  'Sor Beatriz Núñez':    {s:3,r:0,c:0}, 'Inés Vega':        {s:1,r:1,c:1},
+  'Sr. Casas':            {s:3,r:1,c:0}, 'Padre Anselmo Cruz':{s:2,r:1,c:0},
+};
+
+function suspectPortraitStyle(name) {
+  const img = SUSPECT_IMAGES[name];
+  if (!img) return '';
+  const px = ['0%','50%','100%'][img.c];
+  const py = img.r === 0 ? '0%' : '100%';
+  return `background-image:url(images/suspects-${img.s}.png);background-size:300% 200%;background-position:${px} ${py}`;
+}
+
 // ── Utilidades ────────────────────────────────────────────────────────────────
 
 function $(sel) { return document.querySelector(sel); }
@@ -279,10 +334,12 @@ function renderIntro() {
   const suspectsHTML = STATE.suspectOrder.map(origIdx => {
     const s = sc.suspects[origIdx];
     return `<div class="suspect-card">
-      <div class="suspect-emoji">${s.emoji}</div>
-      <div class="suspect-name">${s.name}</div>
-      <div class="suspect-role">${s.role}</div>
-      <div class="suspect-detail">${s.detail}</div>
+      <div class="suspect-portrait" style="${suspectPortraitStyle(s.name)}"></div>
+      <div class="suspect-info">
+        <div class="suspect-name">${s.name}</div>
+        <div class="suspect-role">${s.role}</div>
+        <div class="suspect-detail">${s.detail}</div>
+      </div>
     </div>`;
   }).join('');
 
@@ -868,7 +925,7 @@ function renderAccusation() {
   const suspectsHTML = STATE.suspectOrder.map((origIdx, displayIdx) => {
     const s = sc.suspects[origIdx];
     return `<button class="accuse-card" onclick="submitAccusation(${displayIdx})">
-      <div class="accuse-emoji">${s.emoji}</div>
+      <div class="accuse-portrait" style="${suspectPortraitStyle(s.name)}"></div>
       <div class="accuse-name">${s.name}</div>
       <div class="accuse-role">${s.role}</div>
     </button>`;

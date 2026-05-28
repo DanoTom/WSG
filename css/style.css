@@ -32,15 +32,21 @@
   --text2:      #c4a470;
   --text3:      #7c6040;
 
+  /* Pixel noir — deep teal accent for interactive highlights */
+  --teal:       #0f6b6b;
+  --teal-light: #1aadad;
+
   --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-body:  'Crimson Text', Georgia, serif;
-  --font-mono:  'Courier Prime', 'Courier New', monospace;
+  --font-mono:  'Silkscreen', 'Courier New', monospace;
 
   --radius:     8px;
+  --radius-sm:  4px;
   --shadow:     0 4px 24px rgba(0,0,0,0.55);
   --shadow-lg:  0 8px 48px rgba(0,0,0,0.75);
   --glow-gold:  0 0 24px rgba(200,145,26,0.3);
   --glow-red:   0 0 24px rgba(122,24,24,0.4);
+  --glow-teal:  0 0 20px rgba(26,173,173,0.25);
 }
 
 /* ── Reset ──────────────────────────────────────────────── */
@@ -81,7 +87,17 @@ body::before {
 /* ── App container ──────────────────────────────────────── */
 #app {
   min-height: 100vh;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide-up entrance when screen fades in */
+#app .screen {
+  animation: screenEnter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes screenEnter {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Screen base ────────────────────────────────────────── */
@@ -117,7 +133,7 @@ body::before {
 
 .crime-number {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--text3);
@@ -245,20 +261,36 @@ body::before {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px;
+  overflow: hidden;
   text-align: center;
-  transition: border-color 0.2s, transform 0.2s;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .suspect-card:hover {
   border-color: var(--gold-dim);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5), var(--glow-gold);
 }
 
-.suspect-emoji { font-size: 2rem; margin-bottom: 6px; }
-.suspect-name  { font-family: var(--font-serif); font-size: 0.95rem; color: var(--gold-light); font-weight: 700; margin-bottom: 2px; }
-.suspect-role  { font-size: 0.78rem; color: var(--text3); margin-bottom: 6px; letter-spacing: 0.3px; }
-.suspect-detail{ font-size: 0.82rem; color: var(--text2); line-height: 1.45; }
+.suspect-portrait {
+  width: 100%;
+  aspect-ratio: 4/5;
+  background-color: var(--bg2);
+  background-size: 300% 200%;
+  background-position: 0% 0%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border-bottom: 2px solid var(--border);
+  display: block;
+}
+
+.suspect-info {
+  padding: 10px 8px;
+}
+
+.suspect-name  { font-family: var(--font-serif); font-size: 0.88rem; color: var(--gold-light); font-weight: 700; margin-bottom: 2px; line-height: 1.25; }
+.suspect-role  { font-size: 0.72rem; color: var(--text3); margin-bottom: 5px; letter-spacing: 0.3px; }
+.suspect-detail{ font-size: 0.78rem; color: var(--text2); line-height: 1.4; }
 
 /* Intro instructions */
 .intro-instructions {
@@ -296,21 +328,29 @@ body::before {
 .btn-start:active { transform: translateY(0); }
 
 .btn-next {
-  background: var(--card2);
+  background: rgba(30,19,9,0.7);
   color: var(--gold-light);
   border: 1px solid var(--gold-dim);
   border-radius: var(--radius);
-  padding: 14px 32px;
-  font-family: var(--font-serif);
-  font-size: 1rem;
+  padding: 14px 40px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s, transform 0.15s;
-  margin-top: 20px;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .btn-next:hover {
-  background: var(--card);
-  transform: translateY(-1px);
+  background: rgba(200,145,26,0.12);
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-gold);
 }
 
 .btn-submit {
@@ -391,11 +431,11 @@ body::before {
   background: var(--red-glow);
   color: #ff8080;
   border: 1px solid var(--red);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 3px 10px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
+  font-size: 9px;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
@@ -618,6 +658,9 @@ body::before {
 .ws-cell.selecting {
   background: rgba(200,146,26,0.3);
   color: var(--gold-light);
+  transform: scale(1.08);
+  z-index: 1;
+  position: relative;
 }
 
 .ws-cell.found {
@@ -877,28 +920,40 @@ body::before {
   background: var(--card2);
   border: 2px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px 10px;
+  padding: 0;
   cursor: pointer;
   text-align: center;
   transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  align-items: stretch;
   color: var(--text);
+  overflow: hidden;
 }
 
 .accuse-card:hover {
   border-color: var(--red-light);
-  transform: translateY(-3px);
-  box-shadow: var(--glow-red);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--glow-red), 0 12px 32px rgba(0,0,0,0.6);
 }
 
-.accuse-card:active { transform: translateY(0); }
+.accuse-card:active { transform: translateY(0) scale(1); }
 
-.accuse-emoji { font-size: 2.5rem; }
-.accuse-name { font-family: var(--font-serif); font-size: 0.9rem; color: var(--gold-light); font-weight: 700; }
-.accuse-role { font-size: 0.75rem; color: var(--text3); }
+.accuse-portrait {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background-color: var(--bg2);
+  background-size: 300% 200%;
+  background-position: 0% 0%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border-bottom: 2px solid var(--border);
+  display: block;
+  flex-shrink: 0;
+}
+
+.accuse-name { font-family: var(--font-serif); font-size: 0.82rem; color: var(--gold-light); font-weight: 700; padding: 6px 6px 2px; line-height: 1.25; }
+.accuse-role { font-size: 0.68rem; color: var(--text3); padding: 0 6px 8px; }
 
 /* ================================================================
    TRANSITION
@@ -908,32 +963,69 @@ body::before {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 20px;
-  padding-top: 80px;
+  gap: 24px;
+  padding-top: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-transition::before {
+  content: '🔑';
+  position: absolute;
+  font-size: min(60vw, 320px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+  animation: bgFadeIn 1s ease;
 }
 
 .transition-icon {
-  font-size: 4rem;
-  animation: float 2s ease-in-out infinite;
+  font-size: 3.5rem;
+  animation: lockUnlock 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes lockUnlock {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes bgFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 0.04; }
 }
 
 .transition-title {
   font-family: var(--font-serif);
-  font-size: 1.8rem;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
   color: var(--gold-light);
   font-weight: 700;
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 40px rgba(200,145,26,0.4);
 }
 
 .transition-clue {
-  max-width: 480px;
-  background: var(--card);
+  max-width: 500px;
+  background: rgba(30,19,9,0.85);
   border: 1px solid var(--gold-dim);
   border-radius: var(--radius);
-  padding: 20px 24px;
-  font-size: 1rem;
-  color: var(--text2);
+  padding: 22px 28px;
+  font-size: 1.05rem;
+  color: var(--text);
   font-style: italic;
-  line-height: 1.7;
+  line-height: 1.8;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 40px rgba(200,145,26,0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 /* ================================================================
