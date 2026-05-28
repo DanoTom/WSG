@@ -74,6 +74,22 @@ function normalize(str) {
     .trim();
 }
 
+function caesarEncode(text, shift) {
+  return text.toUpperCase().split('').map(c => {
+    if (/[A-Z]/.test(c)) return String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26) + 65);
+    return c;
+  }).join('');
+}
+
+function timeUntilNextCrime() {
+  const now = new Date();
+  const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  const ms = tomorrow.getTime() - now.getTime();
+  const hours = Math.floor(ms / 3600000);
+  const mins = Math.floor((ms % 3600000) / 60000);
+  return `${hours}h ${mins}m`;
+}
+
 // ── Timer ─────────────────────────────────────────────────────────────────────
 
 function startTimer() {
@@ -297,6 +313,7 @@ function submitRiddle() {
       }, 2500);
     } else {
       showFeedback('riddle-feedback', `❌ Incorrecto. Intentá de nuevo.`, 'error');
+      shakeElement(input);
       input.value = '';
       input.focus();
       // Mostrar pista automáticamente en el segundo intento fallido
@@ -518,18 +535,22 @@ function renderCipher() {
   STATE.cipherAttempts = 0;
   STATE.cipherHintUsed = false;
 
-  // Construir tabla de referencia César +3
-  const refHTML = buildCaesarRef();
+  const shift = ch.shift || 3;
+  const encoded = caesarEncode(ch.answer, shift);
+  const instruction = `${ch.context} Es un cifrado César con desplazamiento +${shift}. Descifralo:`;
+
+  // Construir tabla de referencia para este shift
+  const refHTML = buildCaesarRef(shift);
 
   setScreen(`
     <div class="screen screen-challenge">
       ${challengeHeader(2)}
       <div class="challenge-card">
         <h2 class="challenge-title">${ch.title}</h2>
-        <p class="challenge-instruction">${ch.instruction}</p>
+        <p class="challenge-instruction">${instruction}</p>
         <div class="cipher-box">
-          <div class="cipher-encoded">${ch.encoded}</div>
-          <div class="cipher-shift-label">Clave: cada letra fue desplazada +3 posiciones hacia adelante en el abecedario</div>
+          <div class="cipher-encoded">${encoded}</div>
+          <div class="cipher-shift-label">Clave: cada letra fue desplazada +${shift} posiciones hacia adelante en el abecedario</div>
         </div>
         <div class="cipher-ref-toggle">
           <button class="btn-hint" onclick="toggleCipherRef()">📖 Mostrar tabla de referencia</button>
@@ -562,12 +583,12 @@ function renderCipher() {
   }, 300);
 }
 
-function buildCaesarRef() {
+function buildCaesarRef(shift) {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let rows = '';
   for (let i = 0; i < 26; i++) {
     const original = alphabet[i];
-    const encoded = alphabet[(i + 3) % 26];
+    const encoded = alphabet[(i + shift) % 26];
     rows += `<span class="caesar-pair"><span class="caesar-orig">${original}</span><span class="caesar-arrow">→</span><span class="caesar-enc">${encoded}</span></span>`;
   }
   return `<div class="caesar-ref">${rows}</div>`;
@@ -622,6 +643,7 @@ function submitCipher() {
       setTimeout(() => renderTransition(ch.clue, renderTestimony), 2500);
     } else {
       showFeedback('cipher-feedback', `❌ Incorrecto. Intentá de nuevo.`, 'error');
+      shakeElement(input);
       input.value = '';
       input.focus();
       if (STATE.cipherAttempts >= 2) showCipherHint();
@@ -747,6 +769,7 @@ function submitAccusation(idx) {
 
   stopTimer();
   saveResult();
+  STATE.stats = updateStats();
   renderResults();
 }
 
@@ -837,11 +860,20 @@ function renderResults() {
         <div id="share-feedback" class="share-feedback"></div>
       </div>
 
+      ${STATE.stats ? renderStatsBlock(STATE.stats) : ''}
+
       <div class="results-next">
-        <div class="next-crime-text">🗓 El próximo crimen se desbloquea a medianoche</div>
+        <div class="next-crime-text">🗓 Próximo crimen en <strong id="countdown">${timeUntilNextCrime()}</strong></div>
       </div>
     </div>
   `);
+
+  // Refrescar la cuenta regresiva cada minuto
+  if (STATE.countdownInterval) clearInterval(STATE.countdownInterval);
+  STATE.countdownInterval = setInterval(() => {
+    const el = $('#countdown');
+    if (el) el.textContent = timeUntilNextCrime();
+  }, 60000);
 }
 
 // ── Compartir ─────────────────────────────────────────────────────────────────
@@ -897,6 +929,102 @@ function showFeedback(id, html, type) {
   setTimeout(() => el.classList.remove('feedback-visible'), 3000);
 }
 
+function shakeElement(el) {
+  if (!el) return;
+  el.classList.remove('shake');
+  // Forzar reflow para que la animación se reinicie aunque se aplique seguidamente
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+// ── Estadísticas persistentes ────────────────────────────────────────────────
+
+function loadStats() {
+  const defaults = {
+    played: 0,
+    solved: 0,
+    streak: 0,
+    bestStreak: 0,
+    lastSolvedDay: null,
+    bestTime: null,
+    bestScore: 0,
+  };
+  try {
+    const raw = localStorage.getItem('crimen_stats');
+    return raw ? { ...defaults, ...JSON.parse(raw) } : defaults;
+  } catch(e) {
+    return defaults;
+  }
+}
+
+function updateStats() {
+  const s = loadStats();
+
+  // Evitar contar dos veces el mismo día si por alguna razón se llama dos veces
+  if (s.lastPlayedDay === STATE.dayNum) return s;
+
+  s.played++;
+
+  if (STATE.accusationCorrect) {
+    s.solved++;
+
+    // Racha: ¿se resolvió ayer también?
+    if (s.lastSolvedDay === STATE.dayNum - 1) {
+      s.streak++;
+    } else {
+      s.streak = 1;
+    }
+    s.lastSolvedDay = STATE.dayNum;
+
+    if (s.streak > s.bestStreak) s.bestStreak = s.streak;
+    if (!s.bestTime || STATE.elapsed < s.bestTime) s.bestTime = STATE.elapsed;
+    const score = totalScore();
+    if (score > s.bestScore) s.bestScore = score;
+  } else {
+    s.streak = 0;
+  }
+
+  s.lastPlayedDay = STATE.dayNum;
+  try { localStorage.setItem('crimen_stats', JSON.stringify(s)); } catch(e) {}
+  return s;
+}
+
+function renderStatsBlock(stats) {
+  const winRate = stats.played > 0 ? Math.round((stats.solved / stats.played) * 100) : 0;
+  const bestTimeStr = stats.bestTime ? formatTime(stats.bestTime) : '—';
+  return `
+    <div class="stats-block">
+      <div class="stats-title">📊 Tus Estadísticas</div>
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <div class="stat-value">${stats.played}</div>
+          <div class="stat-label">Jugados</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">${stats.solved}</div>
+          <div class="stat-label">Resueltos</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">${winRate}%</div>
+          <div class="stat-label">Éxito</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">🔥 ${stats.streak}</div>
+          <div class="stat-label">Racha</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">🏆 ${stats.bestStreak}</div>
+          <div class="stat-label">Mejor racha</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">⚡ ${bestTimeStr}</div>
+          <div class="stat-label">Mejor tiempo</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // ── LocalStorage ──────────────────────────────────────────────────────────────
 
 function saveResult() {
@@ -941,6 +1069,7 @@ function init() {
     STATE.elapsed = saved.elapsed;
     STATE.startTime = Date.now() - saved.elapsed;
     STATE.endTime = Date.now();
+    STATE.stats = loadStats();
     renderResults();
     return;
   }

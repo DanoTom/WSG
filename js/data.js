@@ -45,9 +45,9 @@ const CRIMES = [
       {
         type: "cipher",
         title: "Mensaje Cifrado",
-        instruction: "Los peritos hallaron esta nota en el estudio de la víctima.\nEs un cifrado César con desplazamiento +3.\nDescifrálo para revelar la pista:",
-        encoded: "GHXGDV",
+        context: "Los peritos hallaron esta nota en el estudio de la víctima.",
         answer: "DEUDAS",
+        shift: 3,
         hint: "Describe la razón financiera del asesino. Empieza con D.",
         clue: "Las deudas del sospechoso superan los tres millones. El banco iba a ejecutar su casa esa semana."
       },
@@ -108,9 +108,9 @@ const CRIMES = [
       {
         type: "cipher",
         title: "Mensaje Cifrado",
-        instruction: "Una nota cifrada fue hallada entre las recetas del chef.\nCifrado César con desplazamiento +3.\nDescifrálo:",
-        encoded: "DOHUJLD",
+        context: "Una nota cifrada fue hallada entre las recetas del chef.",
         answer: "ALERGIA",
+        shift: 5,
         hint: "Lo que mató al chef. Empieza con A, siete letras.",
         clue: "Valentina Cruz tenía acceso exclusivo a todas las fichas médicas del personal de cocina."
       },
@@ -171,9 +171,9 @@ const CRIMES = [
       {
         type: "cipher",
         title: "Mensaje Cifrado",
-        instruction: "La directora había dejado una nota cifrada en su agenda.\nCifrado César con desplazamiento +3.\nDescifrálo:",
-        encoded: "URER",
+        context: "La directora había dejado una nota cifrada en su agenda.",
         answer: "ROBO",
+        shift: 7,
         hint: "Lo que estaba ocurriendo sistemáticamente en el museo. Cuatro letras.",
         clue: "La directora había descubierto el esquema: cuatro obras ya habían sido robadas y reemplazadas por falsificaciones."
       },
@@ -234,9 +234,9 @@ const CRIMES = [
       {
         type: "cipher",
         title: "Mensaje Cifrado",
-        instruction: "Un telegrama interceptado en la estación de origen.\nCifrado César con desplazamiento +3.\nDescifrálo:",
-        encoded: "ULYDO",
+        context: "Un telegrama interceptado en la estación de origen.",
         answer: "RIVAL",
+        shift: 2,
         hint: "Quien más perdía si Sebastián firmaba ese contrato. Cinco letras.",
         clue: "Fernando Pizarro compró su pasaje apenas 4 horas después de que Sebastián reservara el suyo."
       },
@@ -248,9 +248,9 @@ const CRIMES = [
         question: "¿Qué elemento del testimonio sitúa al sospechoso en la escena del crimen?",
         options: [
           { text: "Marina fue la última en ver con vida al señor Ortiz esa noche", correct: false },
-          { text: "Pizarro estaba en el vagón equivocado a la hora en que ocurrió el crimen", correct: false },
-          { text: "Pizarro mentió sobre su destino y fue visto caminar hacia el camarote de la víctima", correct: false },
-          { text: "Pizarro fue visto dirigiéndose al camarote de la víctima cuando afirmó ir al suyo", correct: true }
+          { text: "El señor Ortiz pudo haber sido envenenado por el whisky que sirvió Marina", correct: false },
+          { text: "Pizarro tenía antecedentes financieros que lo convertían en sospechoso", correct: false },
+          { text: "Pizarro mintió sobre su destino y fue visto avanzando hacia el camarote de la víctima", correct: true }
         ],
         explanation: "El testimonio sitúa a Fernando Pizarro moviéndose hacia el camarote de Ortiz mientras mentía sobre su destino. Eso lo ubica en la escena en el momento preciso."
       }
@@ -297,9 +297,9 @@ const CRIMES = [
       {
         type: "cipher",
         title: "Mensaje Cifrado",
-        instruction: "Una nota cifrada hallada dentro del libro de cuentas.\nCifrado César con desplazamiento +3.\nDescifrálo:",
-        encoded: "IRQGRV",
+        context: "Una nota cifrada hallada dentro del libro de cuentas.",
         answer: "FONDOS",
+        shift: 4,
         hint: "Lo que desaparecía sistemáticamente de la hacienda. Seis letras.",
         clue: "Cruz Ramírez transfirió los fondos a cuentas en el exterior usando el nombre de proveedores ficticios."
       },
@@ -360,9 +360,9 @@ const CRIMES = [
       {
         type: "cipher",
         title: "Mensaje Cifrado",
-        instruction: "Un mensaje hallado en el diario del farero, escrito días antes de su muerte.\nCifrado César con desplazamiento +3.\nDescifrálo:",
-        encoded: "WUDILFR",
+        context: "Un mensaje hallado en el diario del farero, escrito días antes de su muerte.",
         answer: "TRAFICO",
+        shift: 6,
         hint: "Actividad ilegal que Mateo había descubierto en las rutas marítimas. Siete letras.",
         clue: "El farero había registrado quince barcos sin documentación en los últimos dos meses, todos con el visto bueno del inspector Espinoza."
       },
@@ -423,9 +423,9 @@ const CRIMES = [
       {
         type: "cipher",
         title: "Mensaje Cifrado",
-        instruction: "El bibliotecario dejó una nota cifrada entre las páginas del catálogo.\nCifrado César con desplazamiento +3.\nDescifrálo:",
-        encoded: "PDQXVFULWR",
+        context: "El bibliotecario dejó una nota cifrada entre las páginas del catálogo.",
         answer: "MANUSCRITO",
+        shift: 8,
         hint: "La obra que fue robada y reemplazada. Diez letras.",
         clue: "El Dr. Prado era el tasador oficial. Fue él quien declaró que la copia era auténtica hace seis meses, lo que frenó toda investigación."
       },
@@ -442,6 +442,447 @@ const CRIMES = [
           { text: "Simón Castro, el anticuario, también tenía conexiones internacionales", correct: false }
         ],
         explanation: "El acceso sin supervisión con equipo de digitalización + la reunión negada con el anticuario que podría vender la pieza forman una cadena de circunstancias que apuntan directamente al Dr. Prado."
+      }
+    ]
+  },
+
+  // ── ESCENARIO 7 ──────────────────────────────────────
+  {
+    id: 7,
+    title: "La Ópera Maldita",
+    setting: "Noche de estreno en el Teatro Imperial. La función debía consagrarla; en cambio, la enterró.",
+    description: "La soprano Aurora Vivaldi cayó muerta en medio de su aria final. La copa de agua que bebió durante el segundo acto contenía un veneno de acción retardada. Alguien sabía exactamente cuándo actuaría.",
+    victim: {
+      name: "Aurora Vivaldi",
+      age: 42,
+      role: "Soprano principal, estrella del Teatro Imperial",
+      detail: "Murió ante un teatro lleno en plena aria final. La autopsia confirmó envenenamiento por una sustancia rara, accesible solo en entornos especializados."
+    },
+    suspects: [
+      { name: "Claudia Fontana",   role: "Soprano suplente",       detail: "35 años. Hace seis años espera el papel principal. Aurora la humilló públicamente la semana anterior.", emoji: "🎭" },
+      { name: "Maestro Caprio",    role: "Director musical",       detail: "60 años. Tuvo un romance con Aurora que terminó muy mal. Ella amenazó con destruir su carrera.", emoji: "🎼" },
+      { name: "Vincent Marlow",    role: "Crítico musical inglés", detail: "50 años. Aurora lo demandó por difamación y ganó. Asistió al estreno con un pase de prensa.", emoji: "🎩" },
+      { name: "Esteban Rojas",     role: "Tramoyista",             detail: "45 años. Acceso total al camerino. Despedido por Aurora hace dos semanas tras una discusión.", emoji: "🔧" }
+    ],
+    culprit: 0,
+    challenges: [
+      {
+        type: "riddle",
+        title: "Adivinanza del Detective",
+        instruction: "Resolvé esta adivinanza para descubrir la primera pista:",
+        riddle: "Quemo por dentro al que no recibe lo que merece.\nMe escondo detrás de una sonrisa cordial.\nEn camerinos y bastidores soy moneda corriente.\nMato más carreras que cualquier crítica.\n¿Qué soy?",
+        hint: "Sentimiento que aparece cuando alguien tiene lo que vos querés.",
+        answers: ["ENVIDIA", "CELOS", "RENCOR", "RESENTIMIENTO"],
+        primaryAnswer: "ENVIDIA",
+        clue: "El móvil más antiguo del mundo: la envidia profesional. Alguien quería el papel principal a cualquier precio."
+      },
+      {
+        type: "wordsearch",
+        title: "Sopa de Letras",
+        instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
+        words: ["ARIA", "TENOR", "CORO", "BAILE", "COPA", "TELON"],
+        clue: "La copa que bebió en escena fue cambiada por otra entre el primer y segundo acto."
+      },
+      {
+        type: "cipher",
+        title: "Mensaje Cifrado",
+        context: "Una nota anónima fue hallada en el camerino de la víctima esa misma tarde.",
+        answer: "ENVIDIA",
+        shift: 4,
+        hint: "El móvil del crimen. Siete letras, empieza con E.",
+        clue: "Claudia Fontana llevaba seis años esperando. Esa noche era su última oportunidad antes de que la reemplazaran por una soprano más joven."
+      },
+      {
+        type: "testimony",
+        title: "Testimonio Clave",
+        instruction: "Leé el testimonio y elegí el indicio más incriminatorio:",
+        text: "La vestuarista Adela Ponce declaró:\n\n\"Entre el primer y segundo acto, la rutina es que yo prepare el agua de la señora Aurora y la deje en su mesa. Esa noche, cuando volví con el segundo vestido, vi a Claudia salir del camerino. Le pregunté qué hacía ahí y me dijo que solo había venido a desearle suerte. Cuando entré, noté que la copa estaba un poco más llena de lo normal, pero no le di importancia. Claudia es asistente del director y a veces entra a coordinar las salidas.\"",
+        question: "¿Qué detalle del testimonio compromete más a la sospechosa?",
+        options: [
+          { text: "Claudia es asistente del director y entra al camerino con frecuencia", correct: false },
+          { text: "Claudia estuvo sola en el camerino justo antes del acto fatal y la copa quedó alterada", correct: true },
+          { text: "Adela debería haber revisado la copa antes de dejar la habitación", correct: false },
+          { text: "La rutina del vestuario era predecible y conocida por todos", correct: false }
+        ],
+        explanation: "El acceso solitario al camerino en el intervalo crítico, combinado con la alteración visible de la copa, ubica a Claudia con la oportunidad exacta para envenenarla."
+      }
+    ]
+  },
+
+  // ── ESCENARIO 8 ──────────────────────────────────────
+  {
+    id: 8,
+    title: "El Laboratorio Secreto",
+    setting: "Madrugada en el Instituto de Biotecnología Avanzada. Los sensores se apagaron 47 minutos.",
+    description: "El Dr. Ezequiel Tarso fue hallado muerto en su laboratorio, junto a la nevera de muestras vacía. La fórmula del proyecto Helios —su trabajo de 12 años— desapareció con él.",
+    victim: {
+      name: "Dr. Ezequiel Tarso",
+      age: 58,
+      role: "Científico jefe del proyecto Helios",
+      detail: "Encontrado a las 5:40 AM por el personal de limpieza. Causa de muerte: inyección letal de un sedante propio del laboratorio. Las muestras del proyecto Helios desaparecieron."
+    },
+    suspects: [
+      { name: "Mariana Sosa",     role: "Asistente principal",   detail: "29 años. Trabajó 7 años con Tarso. Él presentaba el trabajo de ella como propio. Tenía las llaves del laboratorio.", emoji: "👩‍🔬" },
+      { name: "Dr. Konrad Heyer", role: "Competidor académico",  detail: "62 años. Su instituto rival quedaría sin financiación si Helios se publicaba. Estuvo en la conferencia esa noche.", emoji: "👨‍⚕️" },
+      { name: "Olga Petrova",     role: "Visitante extranjera",  detail: "44 años. Se presentó como inversora hace dos semanas. La inteligencia industrial la tiene fichada.", emoji: "🕴️" },
+      { name: "Pablo Mendez",     role: "Becario reciente",      detail: "24 años. Tres meses en el equipo. Coartada: estaba estudiando, pero solo. Ningún testigo.", emoji: "👨‍🎓" }
+    ],
+    culprit: 2,
+    challenges: [
+      {
+        type: "riddle",
+        title: "Adivinanza del Detective",
+        instruction: "Resolvé esta adivinanza para descubrir la primera pista:",
+        riddle: "Soy invisible pero estoy en todas las guerras modernas.\nLas empresas pelean por mí más que por petróleo.\nMe roban con sonrisas, no con armas.\nFórmulas, planos, secretos... soy lo que valgo más que el oro.\n¿Qué soy?",
+        hint: "Conocimiento confidencial que las empresas protegen con todo.",
+        answers: ["ESPIONAJE", "SECRETO", "PROPIEDAD INTELECTUAL", "INFORMACION", "DATOS"],
+        primaryAnswer: "ESPIONAJE",
+        clue: "El proyecto Helios valía cientos de millones para cualquier potencia extranjera. Era el blanco perfecto del espionaje industrial."
+      },
+      {
+        type: "wordsearch",
+        title: "Sopa de Letras",
+        instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
+        words: ["FORMULA", "MUESTRA", "ESPIA", "SECRETO", "PATENTE", "ROBO"],
+        clue: "Solo alguien externo al instituto tenía la motivación para robar la fórmula y huir antes del amanecer."
+      },
+      {
+        type: "cipher",
+        title: "Mensaje Cifrado",
+        context: "Un mensaje hallado en el teléfono descartable del laboratorio, codificado en clave.",
+        answer: "ESPIONAJE",
+        shift: 5,
+        hint: "Lo que estaba pasando en el instituto desde hacía meses. Nueve letras.",
+        clue: "Los sensores de seguridad fueron desactivados de forma profesional. Solo un agente entrenado podría hacerlo."
+      },
+      {
+        type: "testimony",
+        title: "Testimonio Clave",
+        instruction: "Leé el testimonio y elegí el indicio más incriminatorio:",
+        text: "El guardia de seguridad Renato Vázquez declaró:\n\n\"A las 23:40 firmé el ingreso de la 'inversora' Olga Petrova, acompañada por el Dr. Tarso. Era inusual a esa hora pero él insistió. A las 0:32 los sensores del laboratorio se apagaron. Yo asumí mantenimiento, como siempre. A las 1:19 vi a Olga salir sola por la puerta trasera, cargando un maletín térmico que no traía al entrar. Cuando le pregunté, dijo que era una muestra que le había regalado el doctor. Esa fue la última vez que alguien lo vio con vida.\"",
+        question: "¿Qué elemento del testimonio resulta más concluyente?",
+        options: [
+          { text: "Olga entró al instituto en horario nocturno con permiso del propio Tarso", correct: false },
+          { text: "Los sensores se apagaron durante 47 minutos sin explicación oficial", correct: false },
+          { text: "Olga salió sola por la puerta trasera con un maletín que no tenía al entrar", correct: true },
+          { text: "El guardia firmó el ingreso como si fuera una visita autorizada normal", correct: false }
+        ],
+        explanation: "Salir sola, por una puerta secundaria, con un maletín térmico (típico para conservar muestras biológicas) que no traía al entrar, es la cadena de hechos que confirma el robo y la huida."
+      }
+    ]
+  },
+
+  // ── ESCENARIO 9 ──────────────────────────────────────
+  {
+    id: 9,
+    title: "La Casa de Apuestas",
+    setting: "Casino Eldorado, sala VIP. Después del cierre, las cámaras quedaron 'apagadas por mantenimiento'.",
+    description: "Don Vito Salvatore, dueño del casino más grande de la ciudad, fue encontrado muerto en su oficina privada. La caja fuerte estaba abierta y vacía. Solo cuatro personas conocían la combinación.",
+    victim: {
+      name: "Don Vito Salvatore",
+      age: 65,
+      role: "Dueño del Casino Eldorado",
+      detail: "Hallado en su oficina con un disparo a quemarropa. La caja fuerte —que contenía la recaudación de la semana y documentos comprometedores— estaba abierta y vacía."
+    },
+    suspects: [
+      { name: "Lola Reyes",          role: "Croupier estrella",       detail: "32 años. Se rumoreaba que era amante de Don Vito. Conocía las rutinas y horarios de la sala VIP.", emoji: "🎰" },
+      { name: "Maximiliano Borges",  role: "Jugador profesional",     detail: "40 años. Debía al casino más de dos millones. Don Vito había amenazado con cobrarlo 'al estilo viejo'.", emoji: "🃏" },
+      { name: "Aníbal Quintero",     role: "Contador del casino",     detail: "55 años. Acceso total a las cuentas. Don Vito lo investigaba por presunto desvío de fondos.", emoji: "💰" },
+      { name: "Sofía Salvatore",     role: "Hermana y exsocia",       detail: "50 años. Lo demandó hace años por la herencia familiar. Acaba de regresar a la ciudad sin previo aviso.", emoji: "👩‍💼" }
+    ],
+    culprit: 3,
+    challenges: [
+      {
+        type: "riddle",
+        title: "Adivinanza del Detective",
+        instruction: "Resolvé esta adivinanza para descubrir la primera pista:",
+        riddle: "Soy lo que une y lo que destruye a las familias.\nSe pelea por mí en los tribunales por generaciones.\nLa muerte de uno me convierte en la fortuna de otro.\nLos hermanos me han matado por mí muchas veces.\n¿Qué soy?",
+        hint: "Lo que recibe alguien cuando un familiar fallece.",
+        answers: ["HERENCIA", "TESTAMENTO", "LEGADO", "PATRIMONIO"],
+        primaryAnswer: "HERENCIA",
+        clue: "La herencia familiar de los Salvatore nunca quedó resuelta. La muerte de Don Vito reabrió todo."
+      },
+      {
+        type: "wordsearch",
+        title: "Sopa de Letras",
+        instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
+        words: ["CASINO", "FICHA", "CAJA", "DISPARO", "HERMANA", "RUTA"],
+        clue: "La hermana llegó esa misma tarde sin avisar. Su nombre todavía figuraba en algunos documentos antiguos del casino."
+      },
+      {
+        type: "cipher",
+        title: "Mensaje Cifrado",
+        context: "Un mensaje hallado en la agenda personal de Don Vito, escrito una semana antes.",
+        answer: "HERMANA",
+        shift: 6,
+        hint: "Quién regresó después de años para reclamar lo suyo. Siete letras.",
+        clue: "Sofía nunca dejó de tener acceso a la combinación de la caja. La heredó del padre, junto con Vito."
+      },
+      {
+        type: "testimony",
+        title: "Testimonio Clave",
+        instruction: "Leé el testimonio y elegí el indicio más incriminatorio:",
+        text: "El gerente nocturno Carlo Beltrán declaró:\n\n\"Esa tarde llegó Sofía sin avisar y exigió hablar con su hermano a solas. La discusión se escuchó desde el pasillo: gritos sobre 'la mitad que me corresponde' y 'la combinación nunca cambió'. Don Vito la echó. Cuatro horas más tarde, las cámaras de la sala VIP se 'apagaron por mantenimiento' —orden firmada por alguien que se hizo pasar por el contador. Sofía conocía esa cláusula del protocolo, aprendida cuando aún era socia. Su auto fue visto saliendo del estacionamiento a las 23:45.\"",
+        question: "¿Qué combinación de hechos compromete más directamente a la sospechosa?",
+        options: [
+          { text: "La discusión a gritos sobre la mitad del casino y la combinación que 'nunca cambió'", correct: false },
+          { text: "El conocimiento del protocolo de cámaras y su auto en el lugar a la hora del crimen", correct: true },
+          { text: "La aparición sorpresiva en la ciudad después de años de ausencia", correct: false },
+          { text: "Que figuraba como socia en documentos antiguos del casino", correct: false }
+        ],
+        explanation: "Conocer el protocolo interno + estar físicamente en el lugar a la hora del crimen + tener acceso histórico a la combinación forman la triada perfecta: motivo, medio y oportunidad."
+      }
+    ]
+  },
+
+  // ── ESCENARIO 10 ─────────────────────────────────────
+  {
+    id: 10,
+    title: "El Yate Naufragado",
+    setting: "Yate 'Sirena' anclado en bahía de Acapulco. Fiesta privada de medianoche.",
+    description: "El magnate Alessandro Bertoli fue encontrado ahogado en la cabina principal del yate. Detalle inquietante: sus ropas estaban completamente secas. Alguien quería que pareciera un accidente.",
+    victim: {
+      name: "Alessandro Bertoli",
+      age: 70,
+      role: "Magnate naviero, propietario de la flota Bertoli",
+      detail: "Hallado al amanecer en su cabina. Causa real: asfixia por inmersión, pero su ropa estaba seca. Fue ahogado en la bañera y luego trasladado a la cama."
+    },
+    suspects: [
+      { name: "Capitán Marchetti", role: "Capitán del yate",         detail: "55 años. 30 años al servicio. Recién degradado por Alessandro. Conocía cada centímetro del barco.", emoji: "⚓" },
+      { name: "Bianca Reali",      role: "Esposa joven (3 años)",    detail: "32 años. Prenup brutal: si Alessandro moría antes de los 5 años de matrimonio, ella heredaba todo.", emoji: "💎" },
+      { name: "Dr. Gabriel Sterling", role: "Abogado personal",       detail: "58 años. Sabía de cambios secretos al testamento que estaban por firmarse. Habría perdido influencia.", emoji: "⚖️" },
+      { name: "Helena Forte",      role: "Periodista de sociedad",   detail: "38 años. Invitada de último momento. Investigaba un fraude relacionado con la flota Bertoli.", emoji: "📺" }
+    ],
+    culprit: 1,
+    challenges: [
+      {
+        type: "riddle",
+        title: "Adivinanza del Detective",
+        instruction: "Resolvé esta adivinanza para descubrir la primera pista:",
+        riddle: "Soy el documento que los enamorados firman sin leer.\nMe diseñan abogados desconfiados.\nMido el amor en cifras y plazos.\nSi alguien muere antes de tiempo, yo cambio todo.\n¿Qué soy?",
+        hint: "Acuerdo prenupcial entre cónyuges.",
+        answers: ["PRENUP", "PRENUPCIAL", "ACUERDO PRENUPCIAL", "CONTRATO", "CAPITULACIONES"],
+        primaryAnswer: "PRENUPCIAL",
+        clue: "El prenup tenía una cláusula brutal: si Alessandro moría antes de cinco años de casados, Bianca heredaba todo. Faltaban dos semanas para cumplir tres años."
+      },
+      {
+        type: "wordsearch",
+        title: "Sopa de Letras",
+        instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
+        words: ["YATE", "BANERA", "ESPOSA", "BODA", "FORTUNA", "OCEANO"],
+        clue: "La bañera de la cabina principal era la única lo bastante profunda para ahogar a alguien. Y solo ella tenía acceso directo desde el camarote conyugal."
+      },
+      {
+        type: "cipher",
+        title: "Mensaje Cifrado",
+        context: "Mensaje de texto borrado, recuperado del teléfono de la víctima días antes.",
+        answer: "PRENUP",
+        shift: 2,
+        hint: "El documento que determinaba quién heredaría todo. Seis letras.",
+        clue: "Alessandro había contactado a su abogado tres días antes para anular el prenup. La firma estaba programada para el lunes siguiente."
+      },
+      {
+        type: "testimony",
+        title: "Testimonio Clave",
+        instruction: "Leé el testimonio y elegí el indicio más incriminatorio:",
+        text: "La camarera personal Lupita Cárdenas declaró:\n\n\"A las 2:15 AM serví un té al señor Alessandro en la cabina principal, donde estaba con la señora Bianca. Ella me dijo que ya podía retirarme y que ellos se acostarían. A las 3:40 escuché ruido de agua corriendo en la bañera durante mucho tiempo —algo extraño a esa hora. A las 4:05 vi a la señora Bianca salir descalza de la cabina hacia el camarote de huéspedes, con el camisón mojado en las puntas. No le di importancia hasta el desayuno, cuando supe lo ocurrido. Y otro detalle: la cama del señor estaba hecha al revés, como si alguien lo hubiera acomodado.\"",
+        question: "¿Qué detalle es más decisivo para señalar a la sospechosa?",
+        options: [
+          { text: "El ruido prolongado de agua en la bañera a las 3:40 de la madrugada", correct: false },
+          { text: "Bianca pidió que la camarera se retirara, dejándolos sin testigos", correct: false },
+          { text: "El camisón mojado, los desplazamientos nocturnos y la cama acomodada al revés", correct: true },
+          { text: "Bianca durmió en el camarote de huéspedes esa noche en lugar del conyugal", correct: false }
+        ],
+        explanation: "El camisón mojado prueba que estuvo cerca del agua a la hora del ahogamiento. La cama acomodada al revés revela el traslado del cuerpo desde la bañera para simular muerte natural en la cama."
+      }
+    ]
+  },
+
+  // ── ESCENARIO 11 ─────────────────────────────────────
+  {
+    id: 11,
+    title: "La Mansión Embrujada",
+    setting: "Mansión victoriana en las afueras. Sesión espiritista a la medianoche, 13 invitados.",
+    description: "El anfitrión Sebastián Quevedo fue hallado muerto en la mesa redonda al encenderse las luces. La médium afirmaba estar 'canalizando' a la madre fallecida del muerto. Nadie vio nada.",
+    victim: {
+      name: "Sebastián Quevedo",
+      age: 68,
+      role: "Heredero excéntrico de la fortuna Quevedo",
+      detail: "Hallado muerto en plena sesión espiritista, durante el apagón ritual. Apuñalado con un abrecartas de plata que reposaba siempre sobre su escritorio. Sin signos de lucha."
+    },
+    suspects: [
+      { name: "Madame Esmeralda", role: "Médium contratada",          detail: "50 años. Había predicho la muerte en sesiones anteriores. Cobra fortunas y conoce todos los secretos familiares.", emoji: "🔮" },
+      { name: "Tomás Quevedo",    role: "Primo lejano",               detail: "45 años. Aparecía recién agregado al testamento. Sebastián lo presentó la semana anterior. Nadie sabía bien quién era.", emoji: "👤" },
+      { name: "Onésimo Brun",     role: "Mayordomo de toda la vida",  detail: "70 años. 40 años al servicio. Conocía cada rincón de la mansión. Estuvo encendiendo velas durante el ritual.", emoji: "🎩" },
+      { name: "Aurelia Vargas",   role: "Invitada misteriosa",        detail: "38 años. Nadie la conocía bien. Llegó sola con una invitación firmada por Sebastián. Estaba sentada junto a él.", emoji: "🕵️‍♀️" }
+    ],
+    culprit: 1,
+    challenges: [
+      {
+        type: "riddle",
+        title: "Adivinanza del Detective",
+        instruction: "Resolvé esta adivinanza para descubrir la primera pista:",
+        riddle: "Soy el documento que se lee cuando alguien ya no escucha.\nReparto fortunas, separo familias, creo odios eternos.\nUna firma puede convertirme en arma de venganza.\nNadie discute mi palabra final.\n¿Qué soy?",
+        hint: "Documento legal que dispone los bienes después de la muerte.",
+        answers: ["TESTAMENTO", "HERENCIA", "LEGADO", "VOLUNTAD"],
+        primaryAnswer: "TESTAMENTO",
+        clue: "El testamento de Sebastián fue modificado dos semanas antes. Un nombre se agregó: el de un primo del que nadie sabía nada."
+      },
+      {
+        type: "wordsearch",
+        title: "Sopa de Letras",
+        instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
+        words: ["MEDIUM", "VELA", "PRIMO", "PLATA", "RITUAL", "PACTO"],
+        clue: "El primo recién llegado tenía la motivación más reciente y más fuerte de todos: una herencia entera, recién prometida."
+      },
+      {
+        type: "cipher",
+        title: "Mensaje Cifrado",
+        context: "Nota oculta en el reverso de la invitación que Sebastián envió a Aurelia esa semana.",
+        answer: "TESTAMENTO",
+        shift: 7,
+        hint: "Lo que Sebastián acababa de modificar. Diez letras.",
+        clue: "Tomás supo del cambio del testamento. Sabía que cualquier nueva modificación lo dejaría afuera. Tenía que actuar esa misma noche."
+      },
+      {
+        type: "testimony",
+        title: "Testimonio Clave",
+        instruction: "Leé el testimonio y elegí el indicio más incriminatorio:",
+        text: "Madame Esmeralda declaró:\n\n\"Durante el ritual, apagamos las luces y todos nos tomamos de las manos. Sebastián estaba a mi izquierda; Tomás, a la izquierda de Sebastián. Durante el apagón, sentí que la mano izquierda de Sebastián se soltaba de Tomás, pero no le di importancia: es común que los participantes se muevan. Cuando volvió la luz, Sebastián estaba caído sobre la mesa. La sangre todavía manaba. El abrecartas era el de su escritorio: no estaba en la sala antes del ritual. Alguien lo trajo. Y Tomás —recién agregado al testamento dos semanas antes— era el que estaba más cerca.\"",
+        question: "¿Qué hecho del testimonio resulta más decisivo?",
+        options: [
+          { text: "Madame Esmeralda sintió que la mano izquierda de Sebastián se soltaba durante el apagón", correct: false },
+          { text: "El abrecartas no estaba en la sala antes del ritual: alguien lo trajo deliberadamente", correct: false },
+          { text: "Tomás estaba en posición directa, recién favorecido por el testamento, y la mano que cortó el contacto era la que lo unía a él", correct: true },
+          { text: "Madame Esmeralda no avisó del extraño movimiento durante la sesión", correct: false }
+        ],
+        explanation: "La oportunidad física (mano que se suelta junto a él), el motivo recién creado (testamento modificado dos semanas antes) y el arma traída desde el escritorio del propio Sebastián apuntan inequívocamente a Tomás."
+      }
+    ]
+  },
+
+  // ── ESCENARIO 12 ─────────────────────────────────────
+  {
+    id: 12,
+    title: "El Estadio Vacío",
+    setting: "Vestuarios del Estadio Centenario, dos horas después del clásico. Las gradas, desiertas.",
+    description: "El director técnico Héctor 'El Profesor' Sandoval fue hallado muerto en las duchas del vestuario, dos horas después del partido. La causa: golpe contundente con el ladrillo de un trofeo. Iba a renunciar al día siguiente y publicar todo.",
+    victim: {
+      name: "Héctor 'El Profesor' Sandoval",
+      age: 60,
+      role: "Director técnico del Club Centenario",
+      detail: "Encontrado en las duchas dos horas después del clásico. Había anunciado a sus íntimos que renunciaría al día siguiente y publicaría un libro con nombres y cifras. Murió por un golpe contundente."
+    },
+    suspects: [
+      { name: "Diego Russo",      role: "Capitán del equipo",         detail: "30 años. El DT iba a borrarlo del equipo titular por bajo rendimiento y filtraciones a la prensa.", emoji: "⚽" },
+      { name: "Augusto Petersen", role: "Presidente del club",        detail: "60 años. El libro del DT iba a destapar años de coimas, transferencias truchas y vínculos oscuros. Su carrera terminaría.", emoji: "🏛️" },
+      { name: "Aldo Pizarro",     role: "Árbitro del clásico",        detail: "50 años. Cobró un penal inexistente que selló el partido. Visto discutiendo con el DT al salir del campo.", emoji: "🟨" },
+      { name: "Felipe Aroza",     role: "Kinesiólogo del plantel",    detail: "40 años. Acceso permanente al vestuario y a los suplementos. Despedido por el DT semanas atrás.", emoji: "💪" }
+    ],
+    culprit: 1,
+    challenges: [
+      {
+        type: "riddle",
+        title: "Adivinanza del Detective",
+        instruction: "Resolvé esta adivinanza para descubrir la primera pista:",
+        riddle: "Soy el oxígeno de la corrupción.\nViajo en sobres cerrados, en cuentas ocultas, en favores que se cobran.\nLas dirigencias me adoran, las prensas me persiguen.\nCuando me destapan, las cabezas ruedan.\n¿Qué soy?",
+        hint: "Manejo financiero ilícito en organizaciones deportivas.",
+        answers: ["COIMA", "SOBORNO", "CORRUPCION", "COIMAS", "COIMERO"],
+        primaryAnswer: "CORRUPCION",
+        clue: "El libro del DT iba a destapar diez años de manejos turbios en el club. Alguien con todo que perder no podía permitirlo."
+      },
+      {
+        type: "wordsearch",
+        title: "Sopa de Letras",
+        instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
+        words: ["GOL", "PENAL", "LIBRO", "DESPIDO", "CLASICO", "DUCHA"],
+        clue: "El presidente del club no podía dejar que ese libro se publicara. Era su última oportunidad de silenciarlo."
+      },
+      {
+        type: "cipher",
+        title: "Mensaje Cifrado",
+        context: "Mensaje cifrado hallado en el teléfono del DT, enviado horas antes del partido.",
+        answer: "CORRUPCION",
+        shift: 4,
+        hint: "Lo que el libro estaba a punto de destapar. Diez letras.",
+        clue: "Petersen sabía que la publicación lo enviaría directo a la cárcel. Su única salida era silenciar al DT antes de que llegara a la editorial el lunes."
+      },
+      {
+        type: "testimony",
+        title: "Testimonio Clave",
+        instruction: "Leé el testimonio y elegí el indicio más incriminatorio:",
+        text: "El utilero Don Mario Cordone declaró:\n\n\"Después del partido, los jugadores se ducharon y se fueron rápido por la derrota. A las 23:15 quedaban solo el DT, el presidente Petersen y yo, organizando los uniformes. Petersen dijo que quería hablar con el Profesor 'de hombre a hombre' y me pidió retirarme. Cerraron la puerta del vestuario. Yo no me fui del todo: escuché gritos por unos minutos y luego silencio. Más tarde vi salir a Petersen solo, sin el saco que llevaba al entrar, con las manos limpias pero la corbata torcida. Cuando volví al vestuario, encontré al Profesor en la ducha y el trofeo Apertura roto a su lado.\"",
+        question: "¿Qué elemento del testimonio implica más directamente al sospechoso?",
+        options: [
+          { text: "Petersen pidió hablar a solas con el DT y cerraron la puerta del vestuario", correct: false },
+          { text: "Salió sin el saco que llevaba, lo que sugiere que se deshizo de ropa manchada", correct: true },
+          { text: "Los gritos cesaron repentinamente, indicando una resolución violenta", correct: false },
+          { text: "El trofeo Apertura fue usado como arma, lo que es simbólicamente relevante", correct: false }
+        ],
+        explanation: "Salir sin el saco que llevaba al entrar es la prueba más concreta de evidencia material: significa que se deshizo de ropa con manchas de sangre. Combinado con ser el último que estuvo a solas con el DT, lo ubica indiscutiblemente en el crimen."
+      }
+    ]
+  },
+
+  // ── ESCENARIO 13 ─────────────────────────────────────
+  {
+    id: 13,
+    title: "El Convento del Silencio",
+    setting: "Convento de Santa Inés, antes del oficio del alba. Una vela quedó encendida en la capilla.",
+    description: "La Madre Superiora Sor Magdalena Ortiz fue hallada muerta al pie del altar de la capilla. Acababa de descubrir que faltaban donaciones por años. Esa misma noche iba a denunciar todo al obispado.",
+    victim: {
+      name: "Sor Magdalena Ortiz",
+      age: 75,
+      role: "Madre Superiora del Convento de Santa Inés",
+      detail: "Hallada al amanecer junto al altar de la capilla. Estrangulada con su propio rosario. Tenía en sus manos un libro de cuentas con anotaciones de su puño y letra: cifras que no cuadraban desde hacía años."
+    },
+    suspects: [
+      { name: "Sor Beatriz Núñez", role: "Novicia rebelde",       detail: "24 años. Iba a ser expulsada por cuestionar abiertamente las reglas. Llevaba tres meses interna a la fuerza.", emoji: "👼" },
+      { name: "Padre Anselmo Cruz",role: "Capellán del convento",  detail: "55 años. Manejaba personalmente las cuentas de donaciones desde hacía 12 años. Sin auditorías externas.", emoji: "✝️" },
+      { name: "Inés Vega",         role: "Doncella del convento", detail: "35 años. Cocinaba y limpiaba todas las dependencias. Conocía cada recoveco del edificio.", emoji: "🌾" },
+      { name: "Sr. Casas",         role: "Donante anónimo",       detail: "60 años. Aportaba sumas grandes y siempre en efectivo. Visitaba al capellán una vez al mes en privado.", emoji: "💼" }
+    ],
+    culprit: 1,
+    challenges: [
+      {
+        type: "riddle",
+        title: "Adivinanza del Detective",
+        instruction: "Resolvé esta adivinanza para descubrir la primera pista:",
+        riddle: "Llego en sobres cerrados, en alcancías, en gestos generosos.\nDios me bendice, los hombres me reciben.\nA veces me usan para lo que debo; otras, para lo que no.\nFui creada para el bien pero el dinero soy.\n¿Qué soy?",
+        hint: "Dinero que se entrega a una causa religiosa o benéfica.",
+        answers: ["DONACION", "LIMOSNA", "OFRENDA", "CARIDAD", "DIEZMO"],
+        primaryAnswer: "DONACION",
+        clue: "Las donaciones del convento se administraban sin controles externos. Año tras año, las cifras del libro y las del banco no coincidían."
+      },
+      {
+        type: "wordsearch",
+        title: "Sopa de Letras",
+        instruction: "Encontrá las 6 palabras ocultas relacionadas con el crimen. Presioná y deslizá para seleccionar.",
+        words: ["MONJA", "ALTAR", "ORO", "ROSARIO", "VOTO", "PECADO"],
+        clue: "Solo el capellán tenía firma en las cuentas bancarias del convento. La Madre Superiora confiaba ciegamente en él."
+      },
+      {
+        type: "cipher",
+        title: "Mensaje Cifrado",
+        context: "Nota cifrada hallada dentro del libro de horas de la Madre Superiora.",
+        answer: "DONACION",
+        shift: 3,
+        hint: "Aquello que desaparecía sin dejar registro. Ocho letras.",
+        clue: "El Padre Anselmo había desviado donaciones por más de una década. La inminente denuncia al obispado era la sentencia de su vida sacerdotal y de su libertad."
+      },
+      {
+        type: "testimony",
+        title: "Testimonio Clave",
+        instruction: "Leé el testimonio y elegí el indicio más incriminatorio:",
+        text: "La doncella Inés Vega declaró:\n\n\"Anoche, después de Completas, escuché a la Madre llamar al Padre Anselmo a la capilla 'para hablar de cuentas que no pueden esperar al obispado'. Él entró a las 22:30 y salió a las 23:10. La Madre nunca volvió a su celda. Esta mañana, al limpiar la sacristía, encontré la sotana del Padre con el cuello manchado de algo oscuro, y faltaba el dobladillo donde él suele atar el cordón. El rosario con que la Madre fue estrangulada tenía un cordón nuevo, no el original.\"",
+        question: "¿Qué elemento del testimonio resulta más concluyente?",
+        options: [
+          { text: "La Madre llamó al Padre a hablar 'de cuentas que no pueden esperar al obispado'", correct: false },
+          { text: "El Padre fue la última persona que estuvo a solas con la Madre antes de su muerte", correct: false },
+          { text: "La sotana manchada y el dobladillo faltante, idéntico al cordón con que la estrangularon", correct: true },
+          { text: "El Padre estuvo cuarenta minutos en la capilla, tiempo suficiente para el crimen", correct: false }
+        ],
+        explanation: "La mancha en la sotana es evidencia biológica directa. El dobladillo faltante coincidiendo con el cordón asesino es la pieza física que ata al Padre Anselmo al instrumento del crimen sin lugar a duda."
       }
     ]
   }
