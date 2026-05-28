@@ -118,6 +118,21 @@ body::before {
   margin-bottom: 12px;
 }
 
+.difficulty-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  border: 1px solid currentColor;
+}
+.difficulty-1 { color: var(--green-light); }
+.difficulty-2 { color: var(--gold); }
+.difficulty-3 { color: var(--red-light); }
+
 .crime-title {
   font-family: var(--font-serif);
   font-size: clamp(1.8rem, 5vw, 3rem);

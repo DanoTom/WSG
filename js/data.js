@@ -9,6 +9,7 @@ const CRIMES = [
   {
     id: 0,
     title: "Muerte en la Villa Roja",
+    difficulty: 1,
     setting: "Una noche de tormenta en una villa costera del sur...",
     description: "La señora Beatriz Alvarado, viuda y dueña de la Villa Roja, fue hallada muerta al pie del acantilado. Oficialmente: una caída accidental. Pero los indicios cuentan otra historia.",
     victim: {
@@ -72,6 +73,7 @@ const CRIMES = [
   {
     id: 1,
     title: "El Banquete de las Mentiras",
+    difficulty: 2,
     setting: "La noche de inauguración del restaurante más exclusivo de la ciudad...",
     description: "El célebre chef Mathieu Blanc cayó muerto ante sus comensales. La causa: un choque anafiláctico. Alguien sabía exactamente qué ingrediente mezclar en su plato.",
     victim: {
@@ -135,6 +137,7 @@ const CRIMES = [
   {
     id: 2,
     title: "El Museo en la Oscuridad",
+    difficulty: 3,
     setting: "En las salas silenciosas del Museo de Arte Moderno, pasada la medianoche...",
     description: "La directora del museo Claudia Reich fue encontrada sin vida entre las obras de arte. La causa: un golpe en la cabeza. Pero lo más inquietante es lo que descubrió antes de morir.",
     victim: {
@@ -198,6 +201,7 @@ const CRIMES = [
   {
     id: 3,
     title: "Tren Nocturno a Ningún Lugar",
+    difficulty: 1,
     setting: "A bordo del expreso nocturno Buenos Aires–Mendoza, en el vagón privado...",
     description: "El empresario Sebastián Ortiz fue hallado muerto en su camarote privado a mitad del viaje. Las puertas estaban cerradas por dentro. Nadie bajó del tren. El asesino sigue a bordo.",
     victim: {
@@ -261,6 +265,7 @@ const CRIMES = [
   {
     id: 4,
     title: "La Hacienda del Silencio",
+    difficulty: 1,
     setting: "En los campos silenciosos de la hacienda más antigua de la provincia...",
     description: "Don Aurelio Montoya, patriarca de 78 años, apareció muerto en su estudio. Tenía entre sus manos documentos contables que alguien desesperadamente hubiera querido destruir.",
     victim: {
@@ -324,6 +329,7 @@ const CRIMES = [
   {
     id: 5,
     title: "El Faro del Fin del Mundo",
+    difficulty: 1,
     setting: "En una isla remota azotada por el viento, donde el faro guía a los barcos...",
     description: "El farero Mateo Solís apareció muerto al pie de la torre. Un accidente, dijeron. Pero Mateo había enviado una carta esa misma tarde con una sola palabra: 'peligro'.",
     victim: {
@@ -387,6 +393,7 @@ const CRIMES = [
   {
     id: 6,
     title: "La Biblioteca Prohibida",
+    difficulty: 3,
     setting: "En los sótanos de la biblioteca más antigua de la ciudad, entre siglos de historia...",
     description: "El bibliotecario Ernesto Vidal, 82 años, fue encontrado muerto entre los estantes de libros raros. Había descubierto que un manuscrito único del siglo XV había sido robado y reemplazado por una copia.",
     victim: {
@@ -450,6 +457,7 @@ const CRIMES = [
   {
     id: 7,
     title: "La Ópera Maldita",
+    difficulty: 2,
     setting: "Noche de estreno en el Teatro Imperial. La función debía consagrarla; en cambio, la enterró.",
     description: "La soprano Aurora Vivaldi cayó muerta en medio de su aria final. La copa de agua que bebió durante el segundo acto contenía un veneno de acción retardada. Alguien sabía exactamente cuándo actuaría.",
     victim: {
@@ -513,6 +521,7 @@ const CRIMES = [
   {
     id: 8,
     title: "El Laboratorio Secreto",
+    difficulty: 3,
     setting: "Madrugada en el Instituto de Biotecnología Avanzada. Los sensores se apagaron 47 minutos.",
     description: "El Dr. Ezequiel Tarso fue hallado muerto en su laboratorio, junto a la nevera de muestras vacía. La fórmula del proyecto Helios —su trabajo de 12 años— desapareció con él.",
     victim: {
@@ -576,6 +585,7 @@ const CRIMES = [
   {
     id: 9,
     title: "La Casa de Apuestas",
+    difficulty: 2,
     setting: "Casino Eldorado, sala VIP. Después del cierre, las cámaras quedaron 'apagadas por mantenimiento'.",
     description: "Don Vito Salvatore, dueño del casino más grande de la ciudad, fue encontrado muerto en su oficina privada. La caja fuerte estaba abierta y vacía. Solo cuatro personas conocían la combinación.",
     victim: {
@@ -639,6 +649,7 @@ const CRIMES = [
   {
     id: 10,
     title: "El Yate Naufragado",
+    difficulty: 2,
     setting: "Yate 'Sirena' anclado en bahía de Acapulco. Fiesta privada de medianoche.",
     description: "El magnate Alessandro Bertoli fue encontrado ahogado en la cabina principal del yate. Detalle inquietante: sus ropas estaban completamente secas. Alguien quería que pareciera un accidente.",
     victim: {
@@ -702,6 +713,7 @@ const CRIMES = [
   {
     id: 11,
     title: "La Mansión Embrujada",
+    difficulty: 3,
     setting: "Mansión victoriana en las afueras. Sesión espiritista a la medianoche, 13 invitados.",
     description: "El anfitrión Sebastián Quevedo fue hallado muerto en la mesa redonda al encenderse las luces. La médium afirmaba estar 'canalizando' a la madre fallecida del muerto. Nadie vio nada.",
     victim: {
@@ -765,6 +777,7 @@ const CRIMES = [
   {
     id: 12,
     title: "El Estadio Vacío",
+    difficulty: 2,
     setting: "Vestuarios del Estadio Centenario, dos horas después del clásico. Las gradas, desiertas.",
     description: "El director técnico Héctor 'El Profesor' Sandoval fue hallado muerto en las duchas del vestuario, dos horas después del partido. La causa: golpe contundente con el ladrillo de un trofeo. Iba a renunciar al día siguiente y publicar todo.",
     victim: {
@@ -828,6 +841,7 @@ const CRIMES = [
   {
     id: 13,
     title: "El Convento del Silencio",
+    difficulty: 2,
     setting: "Convento de Santa Inés, antes del oficio del alba. Una vela quedó encendida en la capilla.",
     description: "La Madre Superiora Sor Magdalena Ortiz fue hallada muerta al pie del altar de la capilla. Acababa de descubrir que faltaban donaciones por años. Esa misma noche iba a denunciar todo al obispado.",
     victim: {

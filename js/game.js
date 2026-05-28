@@ -39,6 +39,9 @@ const STATE = {
     foundCount: 0,
     hintsUsed: 0,
   },
+
+  // Orden aleatorio de sospechosos para este día (display index → original index)
+  suspectOrder: null,
 };
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -72,6 +75,24 @@ function normalize(str) {
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .trim();
+}
+
+// Mezcla los sospechosos para este día. Usa seed basada en dayNum para que
+// cada vez que vuelve el mismo crimen (cada 14 días) el orden sea diferente.
+function buildSuspectOrder(dayNum, count) {
+  const rng = new SeededRandom(dayNum * 97 + 31);
+  const order = Array.from({ length: count }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = rng.nextInt(i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
+function difficultyLabel(level) {
+  if (level === 1) return { dots: '●○○', text: 'CASO SIMPLE',   cls: 'difficulty-1' };
+  if (level === 3) return { dots: '●●●', text: 'CASO MAESTRO',  cls: 'difficulty-3' };
+  return                  { dots: '●●○', text: 'CASO COMPLEJO', cls: 'difficulty-2' };
 }
 
 function caesarEncode(text, shift) {
@@ -164,19 +185,23 @@ function challengeHeader(idx) {
 
 function renderIntro() {
   const sc = STATE.scenario;
-  const suspectsHTML = sc.suspects.map((s, i) =>
-    `<div class="suspect-card">
+  const suspectsHTML = STATE.suspectOrder.map(origIdx => {
+    const s = sc.suspects[origIdx];
+    return `<div class="suspect-card">
       <div class="suspect-emoji">${s.emoji}</div>
       <div class="suspect-name">${s.name}</div>
       <div class="suspect-role">${s.role}</div>
       <div class="suspect-detail">${s.detail}</div>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
+
+  const diff = difficultyLabel(sc.difficulty || 2);
 
   setScreen(`
     <div class="screen screen-intro">
       <div class="intro-top">
         <div class="crime-number">🗓 Crimen #${STATE.dayNum} · ${formatDate()}</div>
+        <div class="difficulty-badge ${diff.cls}">${diff.dots} ${diff.text}</div>
         <h1 class="crime-title">${sc.title}</h1>
         <p class="crime-setting">${sc.setting}</p>
       </div>
@@ -725,13 +750,14 @@ function submitTestimony(idx, isCorrect) {
 function renderAccusation() {
   const sc = STATE.scenario;
 
-  const suspectsHTML = sc.suspects.map((s, i) =>
-    `<button class="accuse-card" onclick="submitAccusation(${i})">
+  const suspectsHTML = STATE.suspectOrder.map((origIdx, displayIdx) => {
+    const s = sc.suspects[origIdx];
+    return `<button class="accuse-card" onclick="submitAccusation(${displayIdx})">
       <div class="accuse-emoji">${s.emoji}</div>
       <div class="accuse-name">${s.name}</div>
       <div class="accuse-role">${s.role}</div>
-    </button>`
-  ).join('');
+    </button>`;
+  }).join('');
 
   // Puntuación parcial
   const partial = STATE.scores.reduce((a, b) => a + (b || 0), 0);
@@ -762,9 +788,10 @@ function renderAccusation() {
   `);
 }
 
-function submitAccusation(idx) {
+function submitAccusation(displayIdx) {
   const sc = STATE.scenario;
-  STATE.accusationCorrect = (idx === sc.culprit);
+  const originalIdx = STATE.suspectOrder[displayIdx];
+  STATE.accusationCorrect = (originalIdx === sc.culprit);
   STATE.accusationScore = STATE.accusationCorrect ? ACCUSATION_SCORE : 0;
 
   stopTimer();
@@ -1059,6 +1086,7 @@ function startGame() {
 function init() {
   STATE.dayNum = getDayNumber();
   STATE.scenario = getTodaysCrime();
+  STATE.suspectOrder = buildSuspectOrder(STATE.dayNum, STATE.scenario.suspects.length);
 
   // ¿Ya jugó hoy?
   const saved = loadSavedResult();
