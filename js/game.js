@@ -8,31 +8,26 @@ const STATE = {
   scenario: null,
   dayNum: 0,
 
-  // Flujo: 'intro' | 'challenge' | 'transition' | 'accusation' | 'results'
   phase: 'intro',
-  challengeIdx: 0,    // 0-3 (4 desafíos antes de la acusación)
+  challengeIdx: 0,
 
-  // Puntuaciones [0-3]
   scores: [null, null, null, null],
   accusationCorrect: null,
   accusationScore: 0,
 
-  // Timer
   startTime: null,
   endTime: null,
   timerInterval: null,
   elapsed: 0,
 
-  // Estado del desafío actual
   riddleAttempts: 0,
   riddleHintUsed: false,
-  cipherAttempts: 0,
   cipherHintUsed: false,
+  cipherCurrentShift: 1,
   testimonyAnswered: false,
 
-  // Sopa de letras
   ws: {
-    data: null,     // { grid, placed, size }
+    data: null,
     isSelecting: false,
     startCell: null,
     selectionCells: [],
@@ -40,11 +35,12 @@ const STATE = {
     hintsUsed: 0,
   },
 
-  // Orden aleatorio de sospechosos para este día (display index → original index)
   suspectOrder: null,
-
-  // Función pendiente para la pantalla de transición
   pendingTransition: null,
+
+  notebook: { entries: [], unread: 0 },
+  testimonyParts: [],
+  testimonyShownParts: 0,
 };
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -52,7 +48,7 @@ const STATE = {
 const MAX_CHALLENGE_SCORE = 100;
 const ACCUSATION_SCORE = 200;
 const MAX_TIME_BONUS = 200;
-const TIME_BONUS_CUTOFF_MS = 20 * 60 * 1000; // 20 minutos
+const TIME_BONUS_CUTOFF_MS = 20 * 60 * 1000;
 
 // ── Utilidades ────────────────────────────────────────────────────────────────
 
@@ -86,8 +82,6 @@ function executeTransition() {
   if (fn) fn();
 }
 
-// Mezcla los sospechosos para este día. Usa seed basada en dayNum para que
-// cada vez que vuelve el mismo crimen (cada 14 días) el orden sea diferente.
 function buildSuspectOrder(dayNum, count) {
   const rng = new SeededRandom(dayNum * 97 + 31);
   const order = Array.from({ length: count }, (_, i) => i);
@@ -109,6 +103,10 @@ function caesarEncode(text, shift) {
     if (/[A-Z]/.test(c)) return String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26) + 65);
     return c;
   }).join('');
+}
+
+function caesarDecode(text, shift) {
+  return caesarEncode(text, (26 - (shift % 26)) % 26);
 }
 
 function timeUntilNextCrime() {
@@ -166,7 +164,6 @@ function setScreen(html) {
   setTimeout(() => {
     app.innerHTML = html;
     app.style.opacity = '1';
-    // Reattach timer display
     const timerEl = $('#timer');
     if (timerEl && STATE.startTime && !STATE.endTime) {
       timerEl.textContent = '⏱ ' + formatTime(Date.now() - STATE.startTime);
@@ -174,20 +171,105 @@ function setScreen(html) {
   }, 250);
 }
 
+function renderTimeline(activeIdx) {
+  const nodes = [
+    { icon: '🔍', label: 'Pista' },
+    { icon: '🔎', label: 'Sopa' },
+    { icon: '📜', label: 'Cifrado' },
+    { icon: '💬', label: 'Testigo' },
+    { icon: '⚖️', label: 'Acusar' },
+  ];
+  let html = '<div class="timeline">';
+  nodes.forEach((n, i) => {
+    const isDone   = i < activeIdx;
+    const isActive = i === activeIdx;
+    const nodeCls  = isDone ? 'done' : isActive ? 'active' : 'pending';
+    const labelCls = isDone ? 'done-label' : isActive ? 'active-label' : '';
+    html += `<div class="timeline-step">
+      <div class="timeline-node ${nodeCls}">${isDone ? '✓' : n.icon}</div>
+      <div class="timeline-label ${labelCls}">${n.label}</div>
+    </div>`;
+    if (i < nodes.length - 1) {
+      html += `<div class="timeline-line${isDone ? ' done' : ''}"></div>`;
+    }
+  });
+  html += '</div>';
+  return html;
+}
+
 function challengeHeader(idx) {
-  const labels = ['Adivinanza', 'Sopa de Letras', 'Mensaje Cifrado', 'Testimonio'];
-  const icons  = ['🔍', '🔎', '📜', '💬'];
-  const progress = ((idx + 1) / 5) * 100;
   return `
     <div class="challenge-header">
-      <div class="challenge-meta">
-        <span class="challenge-badge">${icons[idx]} PRUEBA ${idx + 1}/5</span>
-        <span class="challenge-type-label">${labels[idx]}</span>
+      <div class="challenge-timer-row">
+        <div id="timer" class="timer">${STATE.startTime ? '⏱ ' + formatTime(Date.now() - STATE.startTime) : ''}</div>
       </div>
-      <div id="timer" class="timer">${STATE.startTime ? '⏱ ' + formatTime(Date.now() - STATE.startTime) : ''}</div>
+      ${renderTimeline(idx)}
     </div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${progress}%"></div></div>
   `;
+}
+
+// ── Cuaderno del Detective ────────────────────────────────────────────────────
+
+function addNotebookEntry(icon, title, content) {
+  STATE.notebook.entries.push({ icon, title, content });
+  STATE.notebook.unread++;
+  updateNotebookBadge();
+}
+
+function updateNotebookBadge() {
+  const badge = $('#notebook-badge');
+  if (!badge) return;
+  if (STATE.notebook.unread > 0) {
+    badge.textContent = STATE.notebook.unread;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function toggleNotebook() {
+  const drawer  = $('#notebook-drawer');
+  const overlay = $('#notebook-overlay');
+  if (!drawer) return;
+  if (drawer.classList.contains('open')) {
+    closeNotebook();
+  } else {
+    drawer.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+    STATE.notebook.unread = 0;
+    updateNotebookBadge();
+    renderNotebookEntries();
+  }
+}
+
+function closeNotebook() {
+  const drawer  = $('#notebook-drawer');
+  const overlay = $('#notebook-overlay');
+  if (drawer)  drawer.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function renderNotebookEntries() {
+  const container = $('#notebook-entries');
+  if (!container) return;
+  if (STATE.notebook.entries.length === 0) {
+    container.innerHTML = '<div class="notebook-empty">Las pistas aparecerán aquí mientras investigás.</div>';
+    return;
+  }
+  container.innerHTML = STATE.notebook.entries.map(entry => `
+    <div class="notebook-entry">
+      <div class="notebook-entry-header">
+        <span class="notebook-entry-icon">${entry.icon}</span>
+        <span class="notebook-entry-title">${entry.title}</span>
+      </div>
+      <div class="notebook-entry-content">${entry.content}</div>
+    </div>
+  `).join('');
+}
+
+function showNotebookFAB() {
+  const btn = $('#notebook-btn');
+  if (btn) btn.style.display = 'flex';
 }
 
 // ── Pantalla: Intro ───────────────────────────────────────────────────────────
@@ -292,7 +374,6 @@ function renderRiddle() {
   setTimeout(() => {
     const input = $('#riddle-input');
     if (input) input.focus();
-    // Mostrar botón de pista después de 20 segundos
     setTimeout(() => {
       const hintBtn = $('#hint-btn');
       if (hintBtn) hintBtn.style.display = 'inline-block';
@@ -309,6 +390,11 @@ function showRiddleHint() {
   if (hintBtn) hintBtn.style.display = 'none';
 }
 
+function continueAfterRiddleFail() {
+  const ch = STATE.scenario.challenges[0];
+  renderTransition(ch.clue, renderWordSearch);
+}
+
 function submitRiddle() {
   const input = $('#riddle-input');
   if (!input) return;
@@ -319,7 +405,6 @@ function submitRiddle() {
   const correct = ch.answers.some(a => normalize(a) === val);
 
   if (correct) {
-    // Calcular puntuación
     let score = MAX_CHALLENGE_SCORE;
     if (STATE.riddleHintUsed) score -= 25;
     if (STATE.riddleAttempts === 1) score -= 20;
@@ -329,29 +414,26 @@ function submitRiddle() {
     showFeedback('riddle-feedback', `✅ ¡Correcto! La respuesta es <strong>${ch.primaryAnswer}</strong>. (+${STATE.scores[0]} pts)`, 'success');
     input.disabled = true;
     $$('.btn-submit').forEach(b => b.disabled = true);
-    setTimeout(() => {
-      renderTransition(ch.clue, renderWordSearch);
-    }, 1800);
+    addNotebookEntry('🔑', 'Pista 1: Adivinanza', ch.clue);
+    setTimeout(() => renderTransition(ch.clue, renderWordSearch), 1800);
   } else {
     STATE.riddleAttempts++;
     const remaining = 3 - STATE.riddleAttempts;
     const attemptsEl = $('#riddle-attempts');
-    if (attemptsEl) attemptsEl.textContent = `Intentos restantes: ${remaining}`;
 
     if (remaining <= 0) {
       STATE.scores[0] = 0;
       showFeedback('riddle-feedback', `❌ La respuesta era <strong>${ch.primaryAnswer}</strong>.`, 'error');
       input.disabled = true;
       $$('.btn-submit').forEach(b => b.disabled = true);
-      setTimeout(() => {
-        renderTransition(ch.clue, renderWordSearch);
-      }, 2500);
+      addNotebookEntry('🔑', 'Pista 1: Adivinanza', ch.clue);
+      if (attemptsEl) attemptsEl.innerHTML = '<button class="btn-continue-fail" onclick="continueAfterRiddleFail()">Continuar investigación →</button>';
     } else {
+      if (attemptsEl) attemptsEl.textContent = `Intentos restantes: ${remaining}`;
       showFeedback('riddle-feedback', `❌ Incorrecto. Intentá de nuevo.`, 'error');
       shakeElement(input);
       input.value = '';
       input.focus();
-      // Mostrar pista automáticamente en el segundo intento fallido
       if (STATE.riddleAttempts >= 2) showRiddleHint();
     }
   }
@@ -362,13 +444,12 @@ function submitRiddle() {
 function renderWordSearch() {
   const ch = STATE.scenario.challenges[1];
 
-  // Generar la sopa con semilla = dayNum * 100 + scenarioId
   const seed = STATE.dayNum * 100 + STATE.scenario.id;
   STATE.ws.data = generateWordSearch(ch.words, seed, 12);
-  STATE.ws.foundCount = 0;
-  STATE.ws.hintsUsed = 0;
+  STATE.ws.foundCount  = 0;
+  STATE.ws.hintsUsed   = 0;
   STATE.ws.isSelecting = false;
-  STATE.ws.startCell = null;
+  STATE.ws.startCell   = null;
   STATE.ws.selectionCells = [];
 
   const wordListHTML = ch.words.map(w =>
@@ -419,10 +500,7 @@ function buildGridHTML() {
 function attachWordSearchEvents() {
   const grid = $('#ws-grid');
   if (!grid) return;
-
-  // Prevenir scroll en móvil durante la sopa
   grid.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-
   grid.addEventListener('pointerdown', wsPointerDown);
   document.addEventListener('pointermove', wsPointerMove);
   document.addEventListener('pointerup', wsPointerUp);
@@ -440,8 +518,8 @@ function wsPointerDown(e) {
   e.preventDefault();
   const cell = getCellFromPoint(e.clientX, e.clientY);
   if (!cell) return;
-  STATE.ws.isSelecting = true;
-  STATE.ws.startCell = cell;
+  STATE.ws.isSelecting  = true;
+  STATE.ws.startCell    = cell;
   STATE.ws.selectionCells = [cell];
   updateWSSelection([cell]);
 }
@@ -450,7 +528,6 @@ function wsPointerMove(e) {
   if (!STATE.ws.isSelecting) return;
   const cell = getCellFromPoint(e.clientX, e.clientY);
   if (!cell) return;
-
   const line = getCellsInLine(STATE.ws.startCell, cell);
   if (line.length > 0) {
     STATE.ws.selectionCells = line;
@@ -472,32 +549,22 @@ function wsPointerUp(e) {
       STATE.ws.foundCount++;
       markFoundCells(found.cells);
       markWordFound(found.word);
-
       const foundNumEl = $('#ws-found-num');
       if (foundNumEl) foundNumEl.textContent = STATE.ws.foundCount;
-
-      // ¿Todas encontradas?
       const totalWords = STATE.scenario.challenges[1].words.length;
-      if (STATE.ws.foundCount >= totalWords) {
-        wsComplete();
-      }
+      if (STATE.ws.foundCount >= totalWords) wsComplete();
     }
   }
 
-  // Limpiar selección visual
   clearWSSelection();
   STATE.ws.selectionCells = [];
 }
 
 function updateWSSelection(cells) {
-  // Limpiar selección anterior
   $$('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
-  // Marcar celdas actuales
   cells.forEach(({ r, c }) => {
     const cellEl = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
-    if (cellEl && !cellEl.classList.contains('found')) {
-      cellEl.classList.add('selecting');
-    }
+    if (cellEl && !cellEl.classList.contains('found')) cellEl.classList.add('selecting');
   });
 }
 
@@ -508,10 +575,7 @@ function clearWSSelection() {
 function markFoundCells(cells) {
   cells.forEach(({ r, c }) => {
     const cellEl = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
-    if (cellEl) {
-      cellEl.classList.remove('selecting');
-      cellEl.classList.add('found');
-    }
+    if (cellEl) { cellEl.classList.remove('selecting'); cellEl.classList.add('found'); }
   });
 }
 
@@ -528,7 +592,6 @@ function wsHint() {
   const target = unfound[0];
   target.found = true;
   STATE.ws.foundCount++;
-
   markFoundCells(target.cells);
   markWordFound(target.word);
 
@@ -536,11 +599,8 @@ function wsHint() {
   if (foundNumEl) foundNumEl.textContent = STATE.ws.foundCount;
 
   const totalWords = STATE.scenario.challenges[1].words.length;
-  if (STATE.ws.foundCount >= totalWords) {
-    wsComplete();
-  }
+  if (STATE.ws.foundCount >= totalWords) wsComplete();
 
-  // Si ya no quedan palabras, ocultar botón
   if (unfound.length <= 1) {
     const hintBtn = $('#ws-hint-btn');
     if (hintBtn) hintBtn.style.display = 'none';
@@ -548,69 +608,83 @@ function wsHint() {
 }
 
 function wsComplete() {
-  // Desconectar eventos de pointer
   document.removeEventListener('pointermove', wsPointerMove);
   document.removeEventListener('pointerup', wsPointerUp);
 
   const score = Math.max(MAX_CHALLENGE_SCORE - STATE.ws.hintsUsed * 15, 40);
   STATE.scores[1] = score;
-
   showFeedback('ws-feedback', `✅ ¡Todas las palabras encontradas! (+${score} pts)`, 'success');
 
   const ch = STATE.scenario.challenges[1];
-  setTimeout(() => {
-    renderTransition(ch.clue, renderCipher);
-  }, 1500);
+  addNotebookEntry('🔑', 'Pista 2: Sopa de letras', ch.clue);
+  setTimeout(() => renderTransition(ch.clue, renderCipher), 1500);
 }
 
-// ── Pantalla: Mensaje Cifrado ─────────────────────────────────────────────────
+// ── Pantalla: Mensaje Cifrado (rueda interactiva) ─────────────────────────────
+
+function buildCipherTiles(text) {
+  return text.split('').map(c => {
+    if (c === ' ') return '<span class="cipher-tile cipher-space">&nbsp;</span>';
+    return `<span class="cipher-tile">${c}</span>`;
+  }).join('');
+}
+
+function buildDecodedTiles(encoded, playerShift) {
+  const decoded = caesarDecode(encoded, playerShift);
+  return decoded.split('').map(c => {
+    if (c === ' ') return '<span class="cipher-tile cipher-tile-decoded cipher-space">&nbsp;</span>';
+    return `<span class="cipher-tile cipher-tile-decoded">${c}</span>`;
+  }).join('');
+}
 
 function renderCipher() {
   const ch = STATE.scenario.challenges[2];
-  STATE.cipherAttempts = 0;
-  STATE.cipherHintUsed = false;
+  STATE.cipherHintUsed    = false;
+  STATE.cipherCurrentShift = 1;
 
-  const shift = ch.shift || 3;
-  const encoded = caesarEncode(ch.answer, shift);
-  const instruction = `${ch.context} Es un cifrado César con desplazamiento +${shift}. Descifralo:`;
-
-  // Construir tabla de referencia para este shift
-  const refHTML = buildCaesarRef(shift);
+  const encoded = caesarEncode(ch.answer, ch.shift || 3);
 
   setScreen(`
     <div class="screen screen-challenge">
       ${challengeHeader(2)}
       <div class="challenge-card">
         <h2 class="challenge-title">${ch.title}</h2>
-        <p class="challenge-instruction">${instruction}</p>
-        <div class="cipher-box">
-          <div class="cipher-encoded">${encoded}</div>
-          <div class="cipher-shift-label">Clave: cada letra fue desplazada +${shift} posiciones hacia adelante en el abecedario</div>
+        <p class="challenge-instruction">${ch.context} Hay un mensaje cifrado. Usá la rueda para encontrar el desplazamiento correcto y descifrar el texto.</p>
+
+        <div class="cipher-panel">
+          <div class="cipher-section-label">Mensaje interceptado</div>
+          <div class="cipher-tiles-row">${buildCipherTiles(encoded)}</div>
         </div>
-        <div class="cipher-ref-toggle">
-          <button class="btn-hint" onclick="toggleCipherRef()">📖 Mostrar tabla de referencia</button>
+
+        <div class="cipher-wheel-box">
+          <button class="cipher-wheel-btn" onclick="adjustCipherShift(-1)">◀</button>
+          <div class="cipher-wheel-display">
+            <div class="cipher-shift-value" id="cipher-shift-val">+1</div>
+            <div class="cipher-shift-subtitle">desplazamiento</div>
+          </div>
+          <button class="cipher-wheel-btn" onclick="adjustCipherShift(1)">▶</button>
         </div>
-        <div id="cipher-ref" class="cipher-ref" style="display:none">${refHTML}</div>
-        <div id="cipher-hint" class="hint-box" style="display:none">
-          💡 Pista: ${ch.hint}
+
+        <div class="cipher-panel cipher-panel-decoded">
+          <div class="cipher-section-label">Descifrado</div>
+          <div class="cipher-tiles-row" id="cipher-decoded-tiles">${buildDecodedTiles(encoded, 1)}</div>
         </div>
-        <div class="input-row">
-          <input id="cipher-input" class="text-input" type="text" placeholder="Mensaje descifrado..." autocomplete="off" autocorrect="off" spellcheck="false" maxlength="40"
-            onkeydown="if(event.key==='Enter') submitCipher()">
-          <button class="btn-submit" onclick="submitCipher()">Confirmar</button>
-        </div>
-        <div id="cipher-feedback" class="feedback"></div>
+
+        <div id="cipher-hint" class="hint-box" style="display:none"></div>
+
         <div class="attempts-info">
-          <span id="cipher-attempts">Intentos restantes: 3</span>
+          <span></span>
           <button class="btn-hint" id="cipher-hint-btn" onclick="showCipherHint()" style="display:none">Ver pista (−25 pts)</button>
         </div>
+
+        <button class="btn-submit btn-full" id="cipher-confirm-btn" onclick="submitCipherWheel()">Confirmar respuesta</button>
+
+        <div id="cipher-feedback" class="feedback"></div>
       </div>
     </div>
   `);
 
   setTimeout(() => {
-    const input = $('#cipher-input');
-    if (input) input.focus();
     setTimeout(() => {
       const hintBtn = $('#cipher-hint-btn');
       if (hintBtn) hintBtn.style.display = 'inline-block';
@@ -618,89 +692,95 @@ function renderCipher() {
   }, 300);
 }
 
-function buildCaesarRef(shift) {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let rows = '';
-  for (let i = 0; i < 26; i++) {
-    const original = alphabet[i];
-    const encoded = alphabet[(i + shift) % 26];
-    rows += `<span class="caesar-pair"><span class="caesar-orig">${original}</span><span class="caesar-arrow">→</span><span class="caesar-enc">${encoded}</span></span>`;
-  }
-  return `<div class="caesar-ref">${rows}</div>`;
+function adjustCipherShift(delta) {
+  STATE.cipherCurrentShift = ((STATE.cipherCurrentShift - 1 + delta + 25) % 25) + 1;
+  updateCipherDisplay();
 }
 
-function toggleCipherRef() {
-  const ref = $('#cipher-ref');
-  if (!ref) return;
-  ref.style.display = ref.style.display === 'none' ? 'block' : 'none';
+function updateCipherDisplay() {
+  const shift   = STATE.cipherCurrentShift;
+  const shiftEl = $('#cipher-shift-val');
+  if (shiftEl) shiftEl.textContent = '+' + shift;
+
+  const ch      = STATE.scenario.challenges[2];
+  const encoded = caesarEncode(ch.answer, ch.shift || 3);
+  const tilesEl = $('#cipher-decoded-tiles');
+  if (tilesEl) tilesEl.innerHTML = buildDecodedTiles(encoded, shift);
+}
+
+function submitCipherWheel() {
+  const ch      = STATE.scenario.challenges[2];
+  const encoded = caesarEncode(ch.answer, ch.shift || 3);
+  const decoded = caesarDecode(encoded, STATE.cipherCurrentShift);
+
+  if (normalize(decoded) === normalize(ch.answer)) {
+    const score = STATE.cipherHintUsed ? MAX_CHALLENGE_SCORE - 25 : MAX_CHALLENGE_SCORE;
+    STATE.scores[2] = score;
+
+    showFeedback('cipher-feedback', `✅ ¡Correcto! El mensaje era <strong>${ch.answer}</strong>. (+${score} pts)`, 'success');
+    const confirmBtn = $('#cipher-confirm-btn');
+    if (confirmBtn) confirmBtn.disabled = true;
+    $$('.cipher-wheel-btn').forEach(b => b.disabled = true);
+    addNotebookEntry('🔑', 'Pista 3: Cifrado', ch.clue);
+    setTimeout(() => renderTransition(ch.clue, renderTestimony), 1800);
+  } else {
+    showFeedback('cipher-feedback', `❌ Ese desplazamiento no descifra el mensaje. Seguí intentando.`, 'error');
+  }
 }
 
 function showCipherHint() {
   if (STATE.cipherHintUsed) return;
   STATE.cipherHintUsed = true;
+
+  const ch = STATE.scenario.challenges[2];
+  STATE.cipherCurrentShift = ch.shift || 3;
+  updateCipherDisplay();
+
   const hintBox = $('#cipher-hint');
-  if (hintBox) { hintBox.style.display = 'block'; hintBox.classList.add('hint-appear'); }
+  if (hintBox) {
+    hintBox.style.display = 'block';
+    hintBox.classList.add('hint-appear');
+    hintBox.innerHTML = `💡 El desplazamiento correcto es <strong>+${ch.shift || 3}</strong>. ${ch.hint}`;
+  }
   const hintBtn = $('#cipher-hint-btn');
   if (hintBtn) hintBtn.style.display = 'none';
 }
 
-function submitCipher() {
-  const input = $('#cipher-input');
-  if (!input) return;
-  const val = normalize(input.value);
-  if (!val) return;
+// ── Pantalla: Testimonio (burbujas progresivas) ───────────────────────────────
 
-  const ch = STATE.scenario.challenges[2];
-  const correct = normalize(ch.answer) === val;
-
-  if (correct) {
-    let score = MAX_CHALLENGE_SCORE;
-    if (STATE.cipherHintUsed) score -= 25;
-    if (STATE.cipherAttempts === 1) score -= 20;
-    if (STATE.cipherAttempts >= 2) score -= 30;
-    STATE.scores[2] = Math.max(score, 50);
-
-    showFeedback('cipher-feedback', `✅ ¡Correcto! El mensaje oculto era <strong>${ch.answer}</strong>. (+${STATE.scores[2]} pts)`, 'success');
-    input.disabled = true;
-    $$('.btn-submit').forEach(b => b.disabled = true);
-    setTimeout(() => renderTransition(ch.clue, renderTestimony), 1800);
-  } else {
-    STATE.cipherAttempts++;
-    const remaining = 3 - STATE.cipherAttempts;
-    const attemptsEl = $('#cipher-attempts');
-    if (attemptsEl) attemptsEl.textContent = `Intentos restantes: ${remaining}`;
-
-    if (remaining <= 0) {
-      STATE.scores[2] = 0;
-      showFeedback('cipher-feedback', `❌ La respuesta era <strong>${ch.answer}</strong>.`, 'error');
-      input.disabled = true;
-      $$('.btn-submit').forEach(b => b.disabled = true);
-      setTimeout(() => renderTransition(ch.clue, renderTestimony), 2500);
-    } else {
-      showFeedback('cipher-feedback', `❌ Incorrecto. Intentá de nuevo.`, 'error');
-      shakeElement(input);
-      input.value = '';
-      input.focus();
-      if (STATE.cipherAttempts >= 2) showCipherHint();
-    }
-  }
-}
-
-// ── Pantalla: Testimonio ──────────────────────────────────────────────────────
-
-function renderTestimony() {
-  const ch = STATE.scenario.challenges[3];
-  STATE.testimonyAnswered = false;
-
-  // Mezclar opciones pero recordar cuál es la correcta
-  const optionsWithIndex = ch.options.map((opt, i) => ({ ...opt, origIdx: i }));
-
-  const optionsHTML = optionsWithIndex.map((opt, i) =>
+function buildTestimonyQuestion(ch) {
+  const optionsHTML = ch.options.map((opt, i) =>
     `<button class="testimony-option" onclick="submitTestimony(${i}, ${opt.correct})" data-idx="${i}">
       <span class="option-letter">${String.fromCharCode(65 + i)}</span>
       <span class="option-text">${opt.text}</span>
     </button>`
   ).join('');
+  return `
+    <div class="testimony-question">${ch.question}</div>
+    <div class="testimony-options" id="testimony-options">${optionsHTML}</div>
+  `;
+}
+
+function renderTestimony() {
+  const ch = STATE.scenario.challenges[3];
+  STATE.testimonyAnswered   = false;
+  STATE.testimonyParts      = ch.text.split('\n\n').filter(p => p.trim());
+  STATE.testimonyShownParts = 1;
+
+  addNotebookEntry('💬', ch.title, ch.text.replace(/\n\n/g, '\n'));
+
+  const firstBubble = `
+    <div class="testimony-bubble">
+      <div class="testimony-speaker">🗣️ ${ch.title}</div>
+      ${STATE.testimonyParts[0].replace(/\n/g, '<br>')}
+    </div>
+  `;
+
+  const hasMore        = STATE.testimonyParts.length > 1;
+  const questionBlock  = hasMore ? '' : buildTestimonyQuestion(ch);
+  const continueBtn    = hasMore
+    ? `<button class="btn-testimony-continue" onclick="revealNextTestimonyPart()">Continuar interrogatorio →</button>`
+    : '';
 
   setScreen(`
     <div class="screen screen-challenge">
@@ -708,13 +788,11 @@ function renderTestimony() {
       <div class="challenge-card">
         <h2 class="challenge-title">${ch.title}</h2>
         <p class="challenge-instruction">${ch.instruction}</p>
-        <div class="testimony-box">
-          <div class="testimony-text">${ch.text.replace(/\n/g, '<br>')}</div>
+        <div class="testimony-bubbles" id="testimony-bubbles">
+          ${firstBubble}
         </div>
-        <div class="testimony-question">${ch.question}</div>
-        <div class="testimony-options" id="testimony-options">
-          ${optionsHTML}
-        </div>
+        <div id="testimony-continue-wrap">${continueBtn}</div>
+        <div id="testimony-question-section">${questionBlock}</div>
         <div id="testimony-feedback" class="feedback"></div>
         <div id="testimony-explanation" class="explanation-box" style="display:none"></div>
       </div>
@@ -722,11 +800,39 @@ function renderTestimony() {
   `);
 }
 
+function revealNextTestimonyPart() {
+  const ch       = STATE.scenario.challenges[3];
+  const bubblesEl = $('#testimony-bubbles');
+  if (!bubblesEl) return;
+
+  const nextIdx = STATE.testimonyShownParts;
+  if (nextIdx >= STATE.testimonyParts.length) return;
+
+  const newBubble = document.createElement('div');
+  newBubble.className = 'testimony-bubble testimony-bubble-new';
+  newBubble.innerHTML = STATE.testimonyParts[nextIdx].replace(/\n/g, '<br>');
+  bubblesEl.appendChild(newBubble);
+  setTimeout(() => newBubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+
+  STATE.testimonyShownParts++;
+
+  if (STATE.testimonyShownParts >= STATE.testimonyParts.length) {
+    const continueWrap = $('#testimony-continue-wrap');
+    if (continueWrap) continueWrap.innerHTML = '';
+
+    const questionSection = $('#testimony-question-section');
+    if (questionSection) {
+      questionSection.innerHTML = buildTestimonyQuestion(ch);
+      questionSection.classList.add('testimony-question-appear');
+    }
+  }
+}
+
 function submitTestimony(idx, isCorrect) {
   if (STATE.testimonyAnswered) return;
   STATE.testimonyAnswered = true;
 
-  const ch = STATE.scenario.challenges[3];
+  const ch      = STATE.scenario.challenges[3];
   const buttons = $$('.testimony-option');
   buttons.forEach(b => b.disabled = true);
 
@@ -738,7 +844,6 @@ function submitTestimony(idx, isCorrect) {
   } else {
     STATE.scores[3] = 0;
     chosen.classList.add('wrong');
-    // Marcar la correcta
     buttons.forEach(b => {
       const idx2 = parseInt(b.dataset.idx);
       if (ch.options[idx2] && ch.options[idx2].correct) b.classList.add('correct');
@@ -769,20 +874,11 @@ function renderAccusation() {
     </button>`;
   }).join('');
 
-  // Puntuación parcial
   const partial = STATE.scores.reduce((a, b) => a + (b || 0), 0);
 
   setScreen(`
     <div class="screen screen-challenge screen-accusation">
-      <div class="challenge-header">
-        <div class="challenge-meta">
-          <span class="challenge-badge">⚖️ PRUEBA 5/5</span>
-          <span class="challenge-type-label">Acusación Final</span>
-        </div>
-        <div id="timer" class="timer">${STATE.startTime ? '⏱ ' + formatTime(Date.now() - STATE.startTime) : ''}</div>
-      </div>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:100%"></div></div>
-
+      ${challengeHeader(4)}
       <div class="challenge-card accusation-card">
         <h2 class="challenge-title">¿Quién es el asesino?</h2>
         <p class="challenge-instruction">
@@ -802,7 +898,7 @@ function submitAccusation(displayIdx) {
   const sc = STATE.scenario;
   const originalIdx = STATE.suspectOrder[displayIdx];
   STATE.accusationCorrect = (originalIdx === sc.culprit);
-  STATE.accusationScore = STATE.accusationCorrect ? ACCUSATION_SCORE : 0;
+  STATE.accusationScore   = STATE.accusationCorrect ? ACCUSATION_SCORE : 0;
 
   stopTimer();
   saveResult();
@@ -813,15 +909,13 @@ function submitAccusation(displayIdx) {
 // ── Pantalla: Resultados ──────────────────────────────────────────────────────
 
 function renderResults() {
-  const sc = STATE.scenario;
+  const sc      = STATE.scenario;
   const culprit = sc.suspects[sc.culprit];
-  const total = totalScore();
+  const total   = totalScore();
   const maxScore = maxPossibleScore();
   const timeBonus = getTimeBonusScore();
-  const challengeTotal = STATE.scores.reduce((a, b) => a + (b || 0), 0);
   const timeStr = formatTime(STATE.elapsed);
 
-  // Emoji chain para compartir
   const emojiChain = STATE.scores.map(s => {
     if (s === null || s === 0) return '🟥';
     if (s >= MAX_CHALLENGE_SCORE) return '🟩';
@@ -846,13 +940,12 @@ function renderResults() {
     </div>`;
   }).join('');
 
-  // Determinar rango
   const pct = total / maxScore;
   let rank, rankClass;
-  if (pct >= 0.9) { rank = '🏆 Detective Maestro'; rankClass = 'rank-gold'; }
-  else if (pct >= 0.7) { rank = '🥈 Detective Experto'; rankClass = 'rank-silver'; }
-  else if (pct >= 0.5) { rank = '🥉 Detective en Progreso'; rankClass = 'rank-bronze'; }
-  else { rank = '🔰 Detective Novato'; rankClass = 'rank-novice'; }
+  if (pct >= 0.9)      { rank = '🏆 Detective Maestro';       rankClass = 'rank-gold'; }
+  else if (pct >= 0.7) { rank = '🥈 Detective Experto';        rankClass = 'rank-silver'; }
+  else if (pct >= 0.5) { rank = '🥉 Detective en Progreso';    rankClass = 'rank-bronze'; }
+  else                 { rank = '🔰 Detective Novato';          rankClass = 'rank-novice'; }
 
   setScreen(`
     <div class="screen screen-results">
@@ -905,7 +998,6 @@ function renderResults() {
     </div>
   `);
 
-  // Refrescar la cuenta regresiva cada minuto
   if (STATE.countdownInterval) clearInterval(STATE.countdownInterval);
   STATE.countdownInterval = setInterval(() => {
     const el = $('#countdown');
@@ -916,7 +1008,7 @@ function renderResults() {
 // ── Compartir ─────────────────────────────────────────────────────────────────
 
 function shareResults(emojiChain, timeStr, total, maxScore) {
-  const sc = STATE.scenario;
+  const sc      = STATE.scenario;
   const verdict = STATE.accusationCorrect ? '✅ RESUELTO' : '❌ SIN RESOLVER';
   const siteURL = window.location.href.split('?')[0];
 
@@ -934,7 +1026,6 @@ function shareResults(emojiChain, timeStr, total, maxScore) {
     siteURL,
   ].join('\n');
 
-  // Web Share API (móvil) o copiar al portapapeles
   if (navigator.share) {
     navigator.share({ title: 'El Crimen del Día', text }).catch(() => copyToClipboard(text));
   } else {
@@ -951,7 +1042,6 @@ function copyToClipboard(text) {
       setTimeout(() => { fb.style.display = 'none'; }, 3000);
     }
   }).catch(() => {
-    // Fallback: prompt con el texto
     prompt('Copiá este texto para compartir:', text);
   });
 }
@@ -969,7 +1059,6 @@ function showFeedback(id, html, type) {
 function shakeElement(el) {
   if (!el) return;
   el.classList.remove('shake');
-  // Forzar reflow para que la animación se reinicie aunque se aplique seguidamente
   void el.offsetWidth;
   el.classList.add('shake');
 }
@@ -978,41 +1067,25 @@ function shakeElement(el) {
 
 function loadStats() {
   const defaults = {
-    played: 0,
-    solved: 0,
-    streak: 0,
-    bestStreak: 0,
-    lastSolvedDay: null,
-    bestTime: null,
-    bestScore: 0,
+    played: 0, solved: 0, streak: 0, bestStreak: 0,
+    lastSolvedDay: null, bestTime: null, bestScore: 0,
   };
   try {
     const raw = localStorage.getItem('crimen_stats');
     return raw ? { ...defaults, ...JSON.parse(raw) } : defaults;
-  } catch(e) {
-    return defaults;
-  }
+  } catch(e) { return defaults; }
 }
 
 function updateStats() {
   const s = loadStats();
-
-  // Evitar contar dos veces el mismo día si por alguna razón se llama dos veces
   if (s.lastPlayedDay === STATE.dayNum) return s;
 
   s.played++;
 
   if (STATE.accusationCorrect) {
     s.solved++;
-
-    // Racha: ¿se resolvió ayer también?
-    if (s.lastSolvedDay === STATE.dayNum - 1) {
-      s.streak++;
-    } else {
-      s.streak = 1;
-    }
+    s.streak = (s.lastSolvedDay === STATE.dayNum - 1) ? s.streak + 1 : 1;
     s.lastSolvedDay = STATE.dayNum;
-
     if (s.streak > s.bestStreak) s.bestStreak = s.streak;
     if (!s.bestTime || STATE.elapsed < s.bestTime) s.bestTime = STATE.elapsed;
     const score = totalScore();
@@ -1027,36 +1100,18 @@ function updateStats() {
 }
 
 function renderStatsBlock(stats) {
-  const winRate = stats.played > 0 ? Math.round((stats.solved / stats.played) * 100) : 0;
+  const winRate    = stats.played > 0 ? Math.round((stats.solved / stats.played) * 100) : 0;
   const bestTimeStr = stats.bestTime ? formatTime(stats.bestTime) : '—';
   return `
     <div class="stats-block">
       <div class="stats-title">📊 Tus Estadísticas</div>
       <div class="stats-grid">
-        <div class="stat-cell">
-          <div class="stat-value">${stats.played}</div>
-          <div class="stat-label">Jugados</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value">${stats.solved}</div>
-          <div class="stat-label">Resueltos</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value">${winRate}%</div>
-          <div class="stat-label">Éxito</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value">🔥 ${stats.streak}</div>
-          <div class="stat-label">Racha</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value">🏆 ${stats.bestStreak}</div>
-          <div class="stat-label">Mejor racha</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value">⚡ ${bestTimeStr}</div>
-          <div class="stat-label">Mejor tiempo</div>
-        </div>
+        <div class="stat-cell"><div class="stat-value">${stats.played}</div><div class="stat-label">Jugados</div></div>
+        <div class="stat-cell"><div class="stat-value">${stats.solved}</div><div class="stat-label">Resueltos</div></div>
+        <div class="stat-cell"><div class="stat-value">${winRate}%</div><div class="stat-label">Éxito</div></div>
+        <div class="stat-cell"><div class="stat-value">🔥 ${stats.streak}</div><div class="stat-label">Racha</div></div>
+        <div class="stat-cell"><div class="stat-value">🏆 ${stats.bestStreak}</div><div class="stat-label">Mejor racha</div></div>
+        <div class="stat-cell"><div class="stat-value">⚡ ${bestTimeStr}</div><div class="stat-label">Mejor tiempo</div></div>
       </div>
     </div>
   `;
@@ -1073,9 +1128,7 @@ function saveResult() {
     elapsed: STATE.elapsed,
     timestamp: Date.now(),
   };
-  try {
-    localStorage.setItem(`crimen_${STATE.dayNum}`, JSON.stringify(result));
-  } catch(e) {}
+  try { localStorage.setItem(`crimen_${STATE.dayNum}`, JSON.stringify(result)); } catch(e) {}
 }
 
 function loadSavedResult() {
@@ -1090,24 +1143,24 @@ function loadSavedResult() {
 function startGame() {
   startTimer();
   STATE.phase = 'challenge';
+  showNotebookFAB();
   renderRiddle();
 }
 
 function init() {
-  STATE.dayNum = getDayNumber();
-  STATE.scenario = getTodaysCrime();
+  STATE.dayNum    = getDayNumber();
+  STATE.scenario  = getTodaysCrime();
   STATE.suspectOrder = buildSuspectOrder(STATE.dayNum, STATE.scenario.suspects.length);
 
-  // ¿Ya jugó hoy?
   const saved = loadSavedResult();
   if (saved) {
-    STATE.scores = saved.scores;
+    STATE.scores          = saved.scores;
     STATE.accusationCorrect = saved.accusationCorrect;
     STATE.accusationScore = saved.accusationScore;
-    STATE.elapsed = saved.elapsed;
-    STATE.startTime = Date.now() - saved.elapsed;
-    STATE.endTime = Date.now();
-    STATE.stats = loadStats();
+    STATE.elapsed         = saved.elapsed;
+    STATE.startTime       = Date.now() - saved.elapsed;
+    STATE.endTime         = Date.now();
+    STATE.stats           = loadStats();
     renderResults();
     return;
   }
@@ -1115,5 +1168,4 @@ function init() {
   renderIntro();
 }
 
-// Arrancar
 document.addEventListener('DOMContentLoaded', init);

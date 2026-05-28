@@ -1242,3 +1242,501 @@ a:hover { text-decoration: underline; }
   .cipher-encoded { font-size: 1.4rem; letter-spacing: 3px; }
   .accuse-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ================================================================
+   TIMELINE DE PROGRESO
+   ================================================================ */
+
+.challenge-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 4px 8px;
+  flex-shrink: 0;
+}
+
+.challenge-timer-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.timeline {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.timeline-node {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.timeline-node.pending {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 11px;
+}
+
+.timeline-node.active {
+  background: rgba(200,145,26,0.15);
+  border: 2px solid var(--gold);
+  color: var(--gold-light);
+  font-size: 14px;
+  animation: timeline-pulse 2.2s ease-in-out infinite;
+}
+
+.timeline-node.done {
+  background: var(--gold-dim);
+  border: 2px solid var(--gold);
+  color: #0f0a06;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.timeline-label {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+.timeline-label.active-label { color: var(--gold); }
+.timeline-label.done-label   { color: var(--gold-dim); }
+
+.timeline-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin-top: 16px;
+  min-width: 6px;
+  transition: background 0.5s ease;
+}
+
+.timeline-line.done {
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+}
+
+@keyframes timeline-pulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(200,145,26,0.25); }
+  50%       { box-shadow: 0 0 18px rgba(200,145,26,0.7); }
+}
+
+/* ================================================================
+   CUADERNO DEL DETECTIVE
+   ================================================================ */
+
+.notebook-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.notebook-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.notebook-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(320px, 92vw);
+  height: 100%;
+  background: var(--card);
+  border-left: 1px solid var(--border2);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 32px rgba(0,0,0,0.6);
+}
+
+.notebook-drawer.open {
+  transform: translateX(0);
+}
+
+.notebook-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--card2);
+}
+
+.notebook-title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--gold-light);
+  font-weight: 700;
+}
+
+.notebook-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.notebook-close:hover { border-color: var(--gold-dim); color: var(--text2); }
+
+.notebook-entries {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notebook-empty {
+  color: var(--text3);
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+  padding: 24px 8px;
+  line-height: 1.6;
+}
+
+.notebook-entry {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  animation: fadeIn 0.3s ease;
+}
+
+.notebook-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.notebook-entry-icon { font-size: 1rem; }
+
+.notebook-entry-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.notebook-entry-content {
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* FAB button */
+.notebook-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  z-index: 300;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-size: 1.35rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  position: fixed;
+}
+
+.notebook-fab:hover {
+  border-color: var(--gold-dim);
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6), var(--glow-gold);
+}
+
+.notebook-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--red-light);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--bg);
+  animation: badge-pop 0.3s ease;
+}
+
+@keyframes badge-pop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ================================================================
+   CIFRADO INTERACTIVO
+   ================================================================ */
+
+.cipher-panel {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cipher-panel-decoded {
+  border-color: var(--gold-dim);
+  background: rgba(200,145,26,0.04);
+}
+
+.cipher-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.cipher-tiles-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.cipher-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 34px;
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+
+.cipher-tile-decoded {
+  background: rgba(200,145,26,0.1);
+  border-color: var(--gold-dim);
+  color: var(--gold-light);
+}
+
+.cipher-space {
+  background: transparent;
+  border-color: transparent;
+  width: 14px;
+}
+
+.cipher-wheel-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px 0;
+}
+
+.cipher-wheel-btn {
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  color: var(--gold-light);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cipher-wheel-btn:hover:not(:disabled) {
+  background: rgba(200,145,26,0.12);
+  border-color: var(--gold-dim);
+}
+
+.cipher-wheel-btn:active:not(:disabled) { transform: scale(0.92); }
+.cipher-wheel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.cipher-wheel-display {
+  text-align: center;
+  min-width: 72px;
+}
+
+.cipher-shift-value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  line-height: 1.1;
+  transition: color 0.15s;
+}
+
+.cipher-shift-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* full-width button variant */
+.btn-full {
+  width: 100%;
+  text-align: center;
+}
+
+/* ================================================================
+   TESTIMONIO EN BURBUJAS
+   ================================================================ */
+
+.testimony-bubbles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.testimony-bubble {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text);
+}
+
+.testimony-speaker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.testimony-bubble-new {
+  animation: slideInBubble 0.35s ease;
+}
+
+@keyframes slideInBubble {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.btn-testimony-continue {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  display: block;
+  margin-top: 4px;
+}
+
+.btn-testimony-continue:hover {
+  border-color: var(--gold);
+  background: rgba(200,145,26,0.08);
+}
+
+.testimony-question-appear {
+  animation: fadeIn 0.4s ease;
+}
+
+/* ================================================================
+   ADIVINANZA — BOTÓN CONTINUAR EXPLÍCITO
+   ================================================================ */
+
+.btn-continue-fail {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-continue-fail:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold-light);
+}
+
+/* ================================================================
+   MEDIA QUERIES (ampliadas)
+   ================================================================ */
+
+@media (max-width: 400px) {
+  .timeline-node { width: 28px; height: 28px; font-size: 11px; }
+  .timeline-label { font-size: 6px; }
+  .cipher-tile { width: 24px; height: 30px; font-size: 0.82rem; }
+  .cipher-wheel-btn { width: 38px; height: 38px; }
+  .cipher-shift-value { font-size: 1.6rem; }
+  .notebook-drawer { width: 100vw; }
+}

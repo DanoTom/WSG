@@ -37,6 +37,22 @@
     </div>
   </div>
 
+  <!-- Cuaderno del Detective (vive fuera de #app para sobrevivir setScreen) -->
+  <div id="notebook-overlay" class="notebook-overlay" onclick="closeNotebook()"></div>
+  <div id="notebook-drawer" class="notebook-drawer">
+    <div class="notebook-header">
+      <span class="notebook-title">📓 Cuaderno del Detective</span>
+      <button class="notebook-close" onclick="closeNotebook()">✕</button>
+    </div>
+    <div id="notebook-entries" class="notebook-entries">
+      <div class="notebook-empty">Las pistas aparecerán aquí mientras investigás.</div>
+    </div>
+  </div>
+  <button id="notebook-btn" class="notebook-fab" onclick="toggleNotebook()" style="display:none">
+    📓
+    <span id="notebook-badge" class="notebook-badge" style="display:none">0</span>
+  </button>
+
   <!-- Scripts en orden de dependencia -->
   <script src="js/data.js"></script>
   <script src="js/wordsearch.js"></script>
