@@ -131,6 +131,20 @@ body::before {
   padding-top: 32px;
 }
 
+/* Wordmark pixel-art (marca del juego) */
+.intro-top::before {
+  content: 'EL CRIMEN DEL DÍA';
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-shadow: 1px 1px 0 #3a2303;
+  margin-bottom: 14px;
+  opacity: 0.9;
+}
+
 .crime-number {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -156,13 +170,18 @@ body::before {
 .difficulty-3 { color: var(--red-light); }
 
 .crime-title {
-  font-family: var(--font-serif);
-  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--gold-light);
-  text-shadow: 0 0 40px rgba(200,146,26,0.3);
-  line-height: 1.15;
-  margin-bottom: 12px;
+  text-transform: uppercase;
+  font-size: clamp(1.2rem, 4.6vw, 1.6rem);
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+  color: #f1d28a;
+  text-shadow:
+    2px 2px 0 #7a4a06,
+    4px 4px 0 #3a2303,
+    0 0 22px rgba(200,146,26,0.4);
+  margin-bottom: 16px;
 }
 
 .crime-setting {
