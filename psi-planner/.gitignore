@@ -1,0 +1,5 @@
+node_modules/
+.entry.jsx
+.bundle.mjs
+out/_*.pdf
+out/shot-*.png
