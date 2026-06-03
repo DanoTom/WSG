@@ -25,22 +25,22 @@ function Guide({ theme = 'clay' }) {
           <span style={{ fontFamily: LP.mono, fontSize: 9.5, letterSpacing: '.1em', color: LP.ink3, textTransform: 'uppercase' }}>léeme primero</span>
         </div>
 
-        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gridAutoRows: '1fr', gap: 14 }}>
+        <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gridAutoRows: '1fr', gap: 12 }}>
           {cards.map((c) => (
-            <div key={c.t} style={{ border: `1px solid ${LP.line}`, borderRadius: 10, padding: '15px 19px', background: LP.paper, display: 'flex', gap: 14, alignItems: 'flex-start', minWidth: 0 }}>
-              <span style={{ width: 38, height: 38, borderRadius: '50%', background: p.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Icon name={c.icon} size={19} color={p.deep} />
+            <div key={c.t} style={{ border: `1px solid ${LP.line}`, borderRadius: 10, padding: '13px 18px', background: LP.paper, display: 'flex', gap: 13, alignItems: 'flex-start', minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ width: 34, height: 34, borderRadius: '50%', background: p.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon name={c.icon} size={17} color={p.deep} />
               </span>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontFamily: LP.serif, fontStyle: 'italic', fontWeight: 500, fontSize: 21, color: LP.ink, marginBottom: 4 }}>{c.t}</div>
-                <div style={{ fontFamily: LP.sans, fontSize: 13.5, lineHeight: 1.55, color: LP.ink2 }}>{c.d}</div>
+                <div style={{ fontFamily: LP.serif, fontStyle: 'italic', fontWeight: 500, fontSize: 19, color: LP.ink, marginBottom: 3 }}>{c.t}</div>
+                <div style={{ fontFamily: LP.sans, fontSize: 13, lineHeight: 1.5, color: LP.ink2 }}>{c.d}</div>
               </div>
             </div>
           ))}
         </div>
 
-        <DottedBox theme={theme} label="Importante" minHeight={56} style={{ marginTop: 14, borderColor: `${p.mid}88` }}>
-          <span style={{ fontFamily: LP.sans, fontSize: 12.5, lineHeight: 1.55, color: LP.ink2 }}>
+        <DottedBox theme={theme} label="Importante" minHeight={50} style={{ marginTop: 12, flexShrink: 0, borderColor: `${p.mid}88` }}>
+          <span style={{ fontFamily: LP.sans, fontSize: 11.5, lineHeight: 1.5, color: LP.ink2 }}>
             Herramienta de organización personal. <b>No reemplaza la historia clínica legal</b> ni un sistema
             certificado de registros. Resguardá tu dispositivo (contraseña, copias de seguridad) y cumplí la
             normativa de protección de datos de tu país. Si borrás los datos del navegador o usás otro
