@@ -120,6 +120,14 @@ psi-planner/
 - **Responsive híbrido**: se mantiene la **página de tamaño fijo** (fidelidad de
   impresión e iPad); en teléfono se ajusta al ancho con scroll vertical y se
   amplían las zonas táctiles. El pellizco-zoom sigue disponible en todo caso.
+- **Fichas y registros multi-instancia**: la **Ficha de paciente** tiene un
+  selector **Paciente 01 · 02 · 03 · +** (cada paciente guarda su ficha por
+  separado); el **Registro de sesión** suma selectores de **Paciente** y
+  **Sesión**. Se implementa con un mecanismo genérico de *ámbitos*
+  (`data-scopes` en la página): la clave de guardado incluye el ámbito activo
+  (`lp:<doc>:<página>|<pac.ses>|<campo>`). Se puede enlazar a una instancia
+  concreta por hash, p. ej. `#ficha~pac:3`.
+- **Diario** con franja horaria ampliada **7:00–22:00** (jornadas largas).
 
 ## Verificación
 

@@ -270,7 +270,7 @@ function MonthlySpread({ theme = 'clay', weekStart = 1 }) {
 function Daily({ theme = 'clay' }) {
   const p = getPal(theme);
   const hours = [];
-  for (let h = 8; h <= 20; h++) hours.push(h);
+  for (let h = 7; h <= 22; h++) hours.push(h);
   const micro = ['Energía', 'Ánimo', 'Sesiones hoy', 'Pausa'];
   const selfcare = ['Pausa entre sesiones', 'Comida sin pantalla', 'Agua', 'Aire / caminar', 'Cierre del día'];
   return (

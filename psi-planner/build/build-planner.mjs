@@ -182,6 +182,15 @@ const globalCss = () => `
   .lp-radio:checked + .lp-chip{border-color:var(--c-deep)!important;background:var(--c-tint)!important;color:var(--c-ink)!important}
   .lp-chiplabel:focus-within .lp-chip{box-shadow:0 0 0 2px var(--c-tint)}
 
+  /* ── selector de instancias (paciente / sesión) ── */
+  .lp-scope{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  .lp-scope-lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:#8C8275;margin-right:4px}
+  .lp-scope-btn,.lp-scope-add{font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;
+    border:1px solid #D8CFC0;background:transparent;color:#5A4F45;border-radius:6px;padding:3px 7px;line-height:1}
+  .lp-scope-btn.on{background:var(--c-tint);border-color:var(--c-deep);color:var(--c-ink);font-weight:600}
+  .lp-scope-add{border-style:dashed;border-color:#B8AE9D;color:#8C8275}
+
   /* ── router de páginas ── */
   #lp-stage{position:relative;width:${PAGE_W}px;height:${PAGE_H}px}
   .lp-page{position:absolute;top:0;left:0;display:none}
@@ -273,6 +282,59 @@ function runtimeJs() {
 
   function pageEl(id){return document.getElementById(id);}
 
+  // ---- ámbitos (varias instancias de una página: paciente / sesión) ----
+  function scopeActive(page,s){ return Math.max(1, parseInt(lsGet(K(page.id,'__scope_'+s))||'1',10)||1); }
+  function scopeCount(page,s){ return Math.max(1, parseInt(lsGet(K(page.id,'__count_'+s))||'1',10)||1); }
+  function scopeComposite(page){
+    var sc=(page.dataset.scopes||'').split(',').filter(Boolean);
+    if(!sc.length) return '';
+    return sc.map(function(s){ return s+scopeActive(page,s); }).join('.');
+  }
+  // Clave de campo con el ámbito activo incrustado (las páginas sin ámbito
+  // mantienen la clave simple de siempre).
+  function FK(page,name){ var c=scopeComposite(page); return K(page.id, c ? (c+'|'+name) : name); }
+
+  function buildScopes(page){
+    page.querySelectorAll('.lp-scope').forEach(function(box){ renderScope(page, box, box.dataset.scope); });
+    updateScopeTitles(page);
+  }
+  function updateScopeTitles(page){
+    page.querySelectorAll('[data-scope-show]').forEach(function(el){
+      el.textContent=('0'+scopeActive(page, el.dataset.scopeShow)).slice(-2);
+    });
+  }
+  function renderScope(page, box, s){
+    var count=scopeCount(page,s), active=scopeActive(page,s);
+    if(active>count){ active=count; lsSet(K(page.id,'__scope_'+s),String(active)); }
+    box.innerHTML='';
+    if(box.dataset.label){ var lb=document.createElement('span'); lb.className='lp-scope-lbl'; lb.textContent=box.dataset.label; box.appendChild(lb); }
+    for(var i=1;i<=count;i++){ (function(i){
+      var b=document.createElement('button'); b.type='button'; b.className='lp-scope-btn'+(i===active?' on':''); b.textContent=('0'+i).slice(-2);
+      b.addEventListener('click',function(){ switchScope(page,s,i); });
+      box.appendChild(b);
+    })(i); }
+    var add=document.createElement('button'); add.type='button'; add.className='lp-scope-add'; add.textContent='+'; add.title='Añadir';
+    add.addEventListener('click',function(){ var c=scopeCount(page,s)+1; lsSet(K(page.id,'__count_'+s),String(c)); switchScope(page,s,c); });
+    box.appendChild(add);
+  }
+  function switchScope(page,s,i){ lsSet(K(page.id,'__scope_'+s),String(i)); reloadPage(page); }
+  function reloadPage(page){
+    page.querySelectorAll('input.lp-toggle').forEach(function(el){el.checked=false;});
+    page.querySelectorAll('input.lp-radio').forEach(function(el){el.checked=false;});
+    page.querySelectorAll('input.lp-field, textarea.lp-area').forEach(function(el){el.value='';});
+    restore(page);
+    buildScopes(page);
+    updateDerived(page);
+  }
+  function applyScopeOverrides(page,str){
+    str.split('.').forEach(function(pair){
+      var kv=pair.split(':'); if(kv.length<2)return;
+      var s=kv[0], v=parseInt(kv[1],10)||1;
+      if(scopeCount(page,s)<v) lsSet(K(page.id,'__count_'+s),String(v));
+      lsSet(K(page.id,'__scope_'+s),String(v));
+    });
+  }
+
   // ---- nombres estables por orden del DOM dentro de la página ----
   function assignNames(page){
     if(page.dataset.named)return;
@@ -352,13 +414,13 @@ function runtimeJs() {
   function wirePersist(scope, page){
     if(!page)return;
     scope.querySelectorAll('input.lp-toggle').forEach(function(el){
-      el.addEventListener('change',function(){lsSet(K(page.id,el.name), el.checked?'1':'0'); growParent(el); updateDerived(page);});
+      el.addEventListener('change',function(){lsSet(FK(page,el.name), el.checked?'1':'0'); growParent(el); updateDerived(page);});
     });
     scope.querySelectorAll('input.lp-radio').forEach(function(el){
-      el.addEventListener('change',function(){if(el.checked){lsSet(K(page.id,'radio|'+el.name), el.value); growParent(el);}});
+      el.addEventListener('change',function(){if(el.checked){lsSet(FK(page,'radio|'+el.name), el.value); growParent(el);}});
     });
     scope.querySelectorAll('input.lp-field, textarea.lp-area').forEach(function(el){
-      var ev=function(){lsSet(K(page.id,el.name), el.value); autoSize(el); growParent(el); updateDerived(page);};
+      var ev=function(){lsSet(FK(page,el.name), el.value); autoSize(el); growParent(el); updateDerived(page);};
       el.addEventListener('input',ev);
       el.addEventListener('change',ev);
     });
@@ -368,14 +430,14 @@ function runtimeJs() {
   function autoSize(el){ /* no-op: alto fijo por diseño */ }
 
   function restore(page){
-    page.querySelectorAll('input.lp-toggle').forEach(function(el){var v=lsGet(K(page.id,el.name)); if(v!=null)el.checked=(v==='1');});
-    page.querySelectorAll('input.lp-field, textarea.lp-area').forEach(function(el){var v=lsGet(K(page.id,el.name)); if(v!=null){el.value=v; autoSize(el);}});
+    page.querySelectorAll('input.lp-toggle').forEach(function(el){var v=lsGet(FK(page,el.name)); el.checked=(v==='1');});
+    page.querySelectorAll('input.lp-field, textarea.lp-area').forEach(function(el){var v=lsGet(FK(page,el.name)); el.value=(v!=null?v:''); autoSize(el);});
     // radios por grupo
     var seen={};
     page.querySelectorAll('input.lp-radio').forEach(function(el){
       if(seen[el.name])return; seen[el.name]=1;
-      var v=lsGet(K(page.id,'radio|'+el.name));
-      if(v!=null){page.querySelectorAll('input.lp-radio[name="'+el.name+'"]').forEach(function(r){r.checked=(r.value===v);});}
+      var v=lsGet(FK(page,'radio|'+el.name));
+      page.querySelectorAll('input.lp-radio[name="'+el.name+'"]').forEach(function(r){r.checked=(v!=null && r.value===v);});
     });
   }
 
@@ -428,24 +490,32 @@ function runtimeJs() {
 
   // ---- router ----
   function resolve(id){ return id; } // sin fechar: sin sentinels #today/#sec-now
-  function show(id){
-    id=resolve((id||'').replace(/^#/,''))||ORDER[0];
-    if(ORDER.indexOf(id)<0) id=ORDER[0];
+  function show(raw){
+    raw=(raw||'').replace(/^#/,'');
+    var parts=raw.split('~');
+    var id=resolve(parts[0])||ORDER[0];
+    if(ORDER.indexOf(id)<0){ id=ORDER[0]; raw=id; }
+    var overrides=parts[1]||'';
     var page=pageEl(id); if(!page)return;
     document.querySelectorAll('.lp-page.is-active').forEach(function(p){p.classList.remove('is-active');});
     page.classList.add('is-active');
     if(!page.dataset.init){
       assignNames(page);
       rebuildGrow(page);
+      if(overrides) applyScopeOverrides(page,overrides);
+      buildScopes(page);
       wirePersist(page,page);
       restore(page);
       page.querySelectorAll('textarea.lp-area').forEach(autoSize);
       updateDerived(page);
       page.dataset.init='1';
+    } else if(overrides){
+      applyScopeOverrides(page,overrides);
+      reloadPage(page);
     }
     var meta=PAGES[ORDER.indexOf(id)];
     var lbl=document.getElementById('tb-label'); if(lbl)lbl.textContent=meta?meta.label:id;
-    if(location.hash!=='#'+id){history.replaceState(null,'','#'+id);}
+    if(location.hash!=='#'+raw){history.replaceState(null,'','#'+raw);}
     window.scrollTo(0,0);
   }
   function step(d){var i=ORDER.indexOf(currentId()); if(i<0)i=0; var n=(i+d+ORDER.length)%ORDER.length; show(ORDER[n]);}

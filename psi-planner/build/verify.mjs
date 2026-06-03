@@ -71,6 +71,40 @@ check('campo texto persiste tras recargar', fieldVal === 'PRUEBA-PERSIST', field
 // 13. otra página del mismo no contaminada
 const otherField = await page.$eval('#registro', () => true).catch(()=>false);
 
+// Selector de pacientes (ámbitos) — aislamiento + persistencia por instancia
+await page.goto(FILE + '#ficha', { waitUntil: 'load' });
+await page.waitForTimeout(300);
+await page.evaluate(() => { const f = document.querySelector('#ficha [name="ficha-codigo"]'); f.value = 'AAA'; f.dispatchEvent(new Event('input', { bubbles: true })); });
+await page.click('#ficha .lp-scope[data-scope="pac"] .lp-scope-add'); // crea y pasa a paciente 02
+await page.waitForTimeout(200);
+const p2empty = await page.$eval('#ficha [name="ficha-codigo"]', (e) => e.value);
+await page.evaluate(() => { const f = document.querySelector('#ficha [name="ficha-codigo"]'); f.value = 'BBB'; f.dispatchEvent(new Event('input', { bubbles: true })); });
+await page.click('#ficha .lp-scope[data-scope="pac"] .lp-scope-btn'); // vuelve a paciente 01
+await page.waitForTimeout(200);
+const p1val = await page.$eval('#ficha [name="ficha-codigo"]', (e) => e.value);
+check('ficha: paciente nuevo arranca vacío', p2empty === '', JSON.stringify(p2empty));
+check('ficha: cada paciente guarda lo suyo', p1val === 'AAA', p1val);
+// persiste tras recargar (con el ámbito)
+await page.goto(FILE + '#ficha', { waitUntil: 'load' });
+await page.waitForTimeout(300);
+const fichaReload = await page.$eval('#ficha [name="ficha-codigo"]', (e) => e.value);
+check('ficha por paciente persiste tras recargar', fichaReload === 'AAA', fichaReload);
+
+// Diario con franja horaria ampliada 7–22
+await page.goto(FILE + '#diario', { waitUntil: 'load' });
+await page.waitForTimeout(200);
+const h7 = await page.$('#diario [name="dia-h7"]');
+const h22 = await page.$('#diario [name="dia-h22"]');
+check('diario 7:00–22:00', !!h7 && !!h22);
+
+// Botón ? abre la ayuda
+await page.goto(FILE + '#hub', { waitUntil: 'load' });
+await page.waitForTimeout(200);
+await page.click('#lp-toolbar button[title^="Ayuda"]');
+await page.waitForTimeout(150);
+const helpOn = await page.$eval('#lp-help-bg', (e) => e.classList.contains('on')).catch(() => false);
+check('botón ? abre la ayuda', helpOn);
+
 // 7. derivado live (finanzas total)
 await page.goto(FILE + '#finanzas', { waitUntil: 'load' });
 await page.waitForTimeout(300);

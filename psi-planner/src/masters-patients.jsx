@@ -72,13 +72,17 @@ function PatientDirectory({ theme = 'clay' }) {
 function PatientCard({ theme = 'clay' }) {
   const p = getPal(theme);
   return (
-    <Page theme={theme} tab="pacientes" padding={0}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '28px 34px 18px', boxSizing: 'border-box' }}>
+    <Page theme={theme} tab="pacientes" padding={0} scopes="pac">
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '24px 34px 18px', boxSizing: 'border-box' }}>
+        {/* selector de paciente */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
+          <a href="#directorio" className="lp-link" style={{ fontFamily: LP.mono, fontSize: 9, letterSpacing: '.08em', color: p.deep, textDecoration: 'none', whiteSpace: 'nowrap' }}>‹ directorio</a>
+          <div className="lp-scope" data-scope="pac" data-label="Paciente" />
+        </div>
         {/* cabecera */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: 16, borderBottom: `1px solid ${LP.line}` }}>
           <div>
-            <a href="#directorio" className="lp-link" style={{ fontFamily: LP.mono, fontSize: 9, letterSpacing: '.08em', color: p.deep, textDecoration: 'none' }}>‹ directorio</a>
-            <Eyebrow color={p.deep} line={false} style={{ marginTop: 4 }}>Ficha de paciente</Eyebrow>
+            <Eyebrow color={p.deep} line={false}>Ficha de paciente</Eyebrow>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 18, marginTop: 6 }}>
               <input type="text" className="lp-field" name="ficha-codigo" placeholder="—" style={{ width: 150, fontFamily: LP.serif, fontStyle: 'italic', fontWeight: 500, fontSize: 56, lineHeight: .85, color: LP.ink }} />
               <div style={{ paddingBottom: 6 }}>
@@ -176,26 +180,24 @@ function PatientCard({ theme = 'clay' }) {
 function SessionLog({ theme = 'clay' }) {
   const p = getPal(theme);
   return (
-    <Page theme={theme} tab="pacientes" padding={0}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '28px 34px 18px', boxSizing: 'border-box' }}>
+    <Page theme={theme} tab="pacientes" padding={0} scopes="pac,ses">
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '24px 34px 18px', boxSizing: 'border-box' }}>
+        {/* selector de paciente + sesión */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 10, flexWrap: 'wrap' }}>
+          <div className="lp-scope" data-scope="pac" data-label="Paciente" />
+          <div className="lp-scope" data-scope="ses" data-label="Sesión" />
+          <a href="#ficha" className="lp-link" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, color: p.deep, textDecoration: 'none', fontFamily: LP.sans, fontSize: 10.5, fontWeight: 600 }}>
+            <Icon name="user" size={12} color={p.deep} />ver ficha<Icon name="arrowR" size={11} color={p.deep} />
+          </a>
+        </div>
         {/* cabecera */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: 16, borderBottom: `1px solid ${LP.line}` }}>
           <div>
             <Eyebrow color={p.deep} line={false}>Registro de sesión</Eyebrow>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginTop: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6 }}>
-                <span style={{ fontFamily: LP.serif, fontStyle: 'italic', fontWeight: 500, fontSize: 54, lineHeight: .85, color: LP.ink }}>N.º</span>
-                <input type="text" className="lp-field" name="reg-num" placeholder="—" style={{ width: 70, fontFamily: LP.serif, fontStyle: 'italic', fontWeight: 500, fontSize: 54, lineHeight: .85, color: LP.ink }} />
-              </div>
-              <div style={{ paddingBottom: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: LP.mono, fontSize: 9.5, color: LP.ink3 }}>
-                  FECHA ·<input type="text" className="lp-field" name="reg-fecha" placeholder="__/__/____" style={{ width: 92, fontFamily: LP.mono, fontSize: 9.5, color: LP.ink }} />
-                </div>
-                <a href="#ficha" style={{ display: 'flex', alignItems: 'center', gap: 5, color: p.deep, textDecoration: 'none' }} className="lp-link">
-                  <Icon name="user" size={12} color={p.deep} />
-                  <input type="text" className="lp-field" name="reg-paciente" placeholder="código" style={{ width: 70, fontFamily: LP.mono, fontSize: 11, fontWeight: 600, color: p.deep }} />
-                  <Icon name="arrowR" size={11} color={p.deep} />
-                </a>
+              <span style={{ fontFamily: LP.serif, fontStyle: 'italic', fontWeight: 500, fontSize: 50, lineHeight: .85, color: LP.ink }}>Sesión <span data-scope-show="ses">01</span></span>
+              <div style={{ paddingBottom: 8, display: 'flex', alignItems: 'center', gap: 5, fontFamily: LP.mono, fontSize: 9.5, color: LP.ink3 }}>
+                FECHA ·<input type="text" className="lp-field" name="reg-fecha" placeholder="__/__/____" style={{ width: 92, fontFamily: LP.mono, fontSize: 9.5, color: LP.ink }} />
               </div>
             </div>
           </div>

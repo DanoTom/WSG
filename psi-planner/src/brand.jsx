@@ -310,10 +310,10 @@ function TopNav({ theme = 'clay', current, height = 60 }) {
 }
 
 // ───────────────────────── PAGE WRAPPER (1080×810) ──
-function Page({ theme = 'clay', tab, currentNav, padding = 36, id, pageLabel, children, style }) {
+function Page({ theme = 'clay', tab, currentNav, padding = 36, id, pageLabel, scopes, children, style }) {
   const navH = 60, railW = 54;
   return (
-    <div className="lp-paper lp-page" id={id} data-label={pageLabel} style={{ width: 1080, height: 810, ...style }}>
+    <div className="lp-paper lp-page" id={id} data-label={pageLabel} data-scopes={scopes} style={{ width: 1080, height: 810, ...style }}>
       <TopNav theme={theme} current={currentNav} height={navH} />
       <SideTabs theme={theme} active={tab} width={railW} height={810} />
       <div style={{
