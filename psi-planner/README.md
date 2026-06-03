@@ -50,7 +50,11 @@ out/Planificador-Clinico.html      ← el entregable (1 archivo, ~1.3 MB)
    cargar (útil para copia de seguridad o pasar de un dispositivo a otro).
 6. **Imprimir / PDF**: botón **Imprimir** o `Ctrl/Cmd+P`. Genera 15 páginas a
    1080 × 810 px exactos (una por hoja).
-7. **En el teléfono** (modo híbrido): en pantallas chicas la página se ajusta al
+7. **Tamaño de letra**: los botones **A− / A+** de la toolbar agrandan o
+   achican **toda la página por igual** (con scroll), y la preferencia se
+   recuerda. Clic en el porcentaje para restablecer. (Es zoom uniforme, no
+   cambia los diseños.)
+8. **En el teléfono** (modo híbrido): en pantallas chicas la página se ajusta al
    **ancho** y se baja con scroll vertical; en escritorio e iPad entra completa.
    En cualquier caso podés **acercar con los dedos** (pellizco). El diseño de
    página fija se mantiene (ideal para iPad e impresión).
@@ -128,6 +132,10 @@ psi-planner/
   (`lp:<doc>:<página>|<pac.ses>|<campo>`). Se puede enlazar a una instancia
   concreta por hash, p. ej. `#ficha~pac:3`.
 - **Diario** con franja horaria ampliada **7:00–22:00** (jornadas largas).
+- **Legibilidad**: control de zoom **A− / A+** en la toolbar (zoom uniforme de
+  toda la página, recordado) y **rediseño de la página Guía** con tipografía más
+  grande y aireada. En un lienzo de tamaño fijo, el zoom uniforme es la vía
+  correcta (un "tamaño de fuente" por elemento rompería las tablas/calendario).
 
 ## Verificación
 

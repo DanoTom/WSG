@@ -104,6 +104,22 @@ await page.click('#lp-toolbar button[title^="Ayuda"]');
 await page.waitForTimeout(150);
 const helpOn = await page.$eval('#lp-help-bg', (e) => e.classList.contains('on')).catch(() => false);
 check('botón ? abre la ayuda', helpOn);
+await page.keyboard.press('Escape');
+await page.waitForTimeout(100);
+
+// Control de zoom A+/A−
+const scaleOf = () => page.evaluate(() => parseFloat((document.getElementById('lp-stage').style.transform.match(/scale\(([^)]+)\)/) || [])[1] || '0'));
+const sc0 = await scaleOf();
+await page.locator('#lp-toolbar button', { hasText: 'A+' }).click();
+await page.waitForTimeout(150);
+const sc1 = await scaleOf();
+check('zoom A+ agranda la página', sc1 > sc0, sc0.toFixed(3) + '→' + sc1.toFixed(3));
+// persiste tras recargar
+await page.reload({ waitUntil: 'load' });
+await page.waitForTimeout(250);
+const sc2 = await scaleOf();
+check('zoom persiste tras recargar', Math.abs(sc2 - sc1) < 0.02, sc2.toFixed(3));
+await page.evaluate(() => { try { localStorage.removeItem('lp:zoom'); } catch (e) {} });
 
 // 7. derivado live (finanzas total)
 await page.goto(FILE + '#finanzas', { waitUntil: 'load' });

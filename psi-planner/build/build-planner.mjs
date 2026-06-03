@@ -197,13 +197,13 @@ const globalCss = () => `
   .lp-page.is-active{display:block}
 
   /* ── escalado ── */
-  #lp-fit{display:flex;align-items:flex-start;justify-content:center;padding:18px;
+  #lp-fit{display:flex;align-items:flex-start;justify-content:safe center;padding:18px;
     box-sizing:border-box}
   #lp-wrap{min-height:100vh}
   #lp-stage{transform-origin:top center}
 
   /* ── toolbar ── */
-  #lp-toolbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:6px;
+  #lp-toolbar{position:sticky;top:0;left:0;z-index:50;display:flex;align-items:center;gap:6px;
     flex-wrap:wrap;padding:7px 12px;background:#FAF6EE;border-bottom:1px solid #D8CFC0;
     font-family:'Manrope',system-ui,sans-serif;font-size:12.5px;color:#2B2622}
   #lp-toolbar .tb-brand{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;
@@ -221,6 +221,9 @@ const globalCss = () => `
   #lp-toolbar .tb-dot.on{box-shadow:0 0 0 2px #fff,0 0 0 3.5px #2B2622}
   #lp-toolbar .tb-theme-name{font-family:'JetBrains Mono',monospace;font-size:10px;
     text-transform:uppercase;letter-spacing:.1em;color:#8C8275;margin-left:4px}
+  #lp-toolbar .tb-z{font-weight:700}
+  #lp-toolbar .tb-zoom{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5A4F45;
+    min-width:42px;text-align:center;cursor:pointer}
 
   /* ── ayuda rápida (modal del botón ?) ── */
   #lp-help-bg{position:fixed;inset:0;z-index:60;background:rgba(24,20,16,.5);
@@ -560,6 +563,11 @@ function runtimeJs() {
   }
 
   // ---- escalado (canvas fijo) ----
+  // Zoom manual del usuario (multiplica el ajuste automático; se recuerda).
+  function getZoom(){ var z=parseFloat(lsGet('lp:zoom')||'1'); if(!isFinite(z)||z<=0)z=1; return Math.min(3, Math.max(0.6, z)); }
+  function setZoom(mult){ lsSet('lp:zoom', String(Math.min(3, Math.max(0.6, getZoom()*mult)))); fit(); updateZoomLabel(); }
+  function resetZoom(){ lsSet('lp:zoom','1'); fit(); updateZoomLabel(); }
+  function updateZoomLabel(){ var el=document.getElementById('tb-zoom'); if(el) el.textContent=Math.round(getZoom()*100)+'%'; }
   function fit(){
     var stage=document.getElementById('lp-stage'); if(!stage)return;
     var tb=document.getElementById('lp-toolbar');
@@ -568,10 +576,10 @@ function runtimeJs() {
     // ajusta al ANCHO (más grande, legible) y se baja con scroll vertical.
     var narrow = vw < 760;
     var pad = narrow ? 12 : 36;
-    var s = narrow
+    var base = narrow
       ? (vw - pad) / PAGE_W
       : Math.min((vw - pad) / PAGE_W, (vh - toolbarH - pad) / PAGE_H);
-    s = Math.max(0.2, s);
+    var s = Math.max(0.2, base * getZoom());
     stage.style.transform='scale('+s+')';
     var wrap=document.getElementById('lp-stage-wrap');
     wrap.style.width=(PAGE_W*s)+'px';
@@ -599,6 +607,10 @@ function runtimeJs() {
     THEMES.forEach(function(t){var d=document.createElement('button'); d.className='tb-dot'; d.dataset.theme=t.id; d.style.background=t.deep; d.title=t.name; d.addEventListener('click',function(){applyTheme(t.id);}); dots.appendChild(d);});
     tb.appendChild(dots);
     var tn=document.createElement('span'); tn.className='tb-theme-name'; tn.id='tb-theme-name'; tb.appendChild(tn);
+    tb.appendChild(sep());
+    tb.appendChild(btn('A−',function(){setZoom(1/1.15);},'tb-z','Texto más chico'));
+    var zl=document.createElement('span'); zl.id='tb-zoom'; zl.className='tb-zoom'; zl.title='Clic para restablecer'; zl.addEventListener('click',resetZoom); tb.appendChild(zl);
+    tb.appendChild(btn('A+',function(){setZoom(1.15);},'tb-z','Texto más grande'));
     tb.appendChild(sep());
     tb.appendChild(btn('Exportar',exportData));
     tb.appendChild(btn('Importar',importData));
@@ -634,6 +646,7 @@ function runtimeJs() {
   window.addEventListener('DOMContentLoaded',function(){
     buildHelp();
     buildToolbar();
+    updateZoomLabel();
     applyTheme(lsGet('lp:theme')||${JSON.stringify(DEFAULT_THEME)});
     window.addEventListener('hashchange',function(){show(location.hash);});
     window.addEventListener('resize',fit);
