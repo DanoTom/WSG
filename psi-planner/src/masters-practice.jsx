@@ -234,14 +234,14 @@ function Culture({ theme = 'clay' }) {
 function Finance({ theme = 'clay' }) {
   const p = getPal(theme);
   const cats = ['Alquiler consultorio', 'Supervisión', 'Formación', 'Impuestos', 'Software / herramientas', 'Otros'];
-  const cols = '36px 1fr 64px 76px 120px';
-  const baseRows = 9;
+  const cols = '62px 1fr 60px 76px 116px';
+  const baseRows = 12;
   return (
     <Page theme={theme} tab="finanzas" padding={0}>
       <div style={{ display: 'flex', height: '100%' }}>
         {/* izquierda (tint) */}
         <div style={{ width: 392, flexShrink: 0, background: p.tint, padding: '30px 30px 24px', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
-          <Eyebrow color={p.deep} line={false}>Finanzas · resumen mensual</Eyebrow>
+          <Eyebrow color={p.deep} line={false}>Finanzas · resumen</Eyebrow>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 18 }}>
             {[['Entra', 'fin-entra', 'left'], ['Sale', 'fin-sale', 'center'], ['Queda', 'fin-queda', 'right']].map(([l, dv, al]) => (
               <div key={dv} style={{ textAlign: al }}>
@@ -262,16 +262,21 @@ function Finance({ theme = 'clay' }) {
 
         {/* derecha · ledger (auto-crece) */}
         <div style={{ flex: 1, padding: '30px 34px 24px', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', minHeight: 0 }}>
-          <Eyebrow color={LP.ink3}>Cobros del mes</Eyebrow>
-          <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: cols, gap: 10, paddingBottom: 8, borderBottom: `1px solid ${LP.line}` }}>
-            {['Día', 'Paciente', 'Modalidad', 'Importe', 'Estado'].map((h) => (
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10 }}>
+            <Eyebrow color={LP.ink3} line={false}>Registro de cobros</Eyebrow>
+            <span style={{ fontFamily: LP.mono, fontSize: 9, letterSpacing: '.06em', color: LP.ink3, whiteSpace: 'nowrap' }}>
+              <span data-derive="ledger-count">0</span> cobros · <span data-derive="ledger-pend">0</span> pend.
+            </span>
+          </div>
+          <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: cols, gap: 10, paddingBottom: 8, borderBottom: `1px solid ${LP.line}` }}>
+            {['Fecha', 'Paciente', 'Modalidad', 'Importe', 'Estado'].map((h) => (
               <span key={h} style={{ fontFamily: LP.mono, fontSize: 8.5, letterSpacing: '.12em', textTransform: 'uppercase', color: LP.ink3 }}>{h}</span>
             ))}
           </div>
           <div data-grow="led" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
             {Array.from({ length: baseRows }).map((_, i) => (
               <div key={i} className="lp-grow-row" style={{ display: 'grid', gridTemplateColumns: cols, gap: 10, alignItems: 'center', height: 40, borderBottom: `1px solid ${LP.lineSoft}` }}>
-                <input type="text" className="lp-field" name={'led-' + i + '-d'} placeholder="·" style={{ fontFamily: LP.mono, fontSize: 10, color: p.deep }} />
+                <input type="text" className="lp-field" name={'led-' + i + '-d'} placeholder="dd/mm" style={{ fontFamily: LP.mono, fontSize: 10, color: p.deep }} />
                 <input type="text" className="lp-field" name={'led-' + i + '-code'} placeholder="—" style={{ fontFamily: LP.mono, fontSize: 11, fontWeight: 600, color: LP.ink }} />
                 <input type="text" className="lp-field" name={'led-' + i + '-mod'} style={{ fontFamily: LP.sans, fontSize: 10.5, color: LP.ink2 }} />
                 <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 1, fontFamily: LP.mono, fontSize: 11, color: LP.ink }}>$<input type="text" inputMode="numeric" className="lp-field lp-num" name={'led-' + i + '-amt'} style={{ width: 56, fontFamily: LP.mono, fontSize: 11, color: LP.ink }} /></span>

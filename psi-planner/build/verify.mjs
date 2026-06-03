@@ -34,8 +34,8 @@ check('sin llamadas de red', netReqs.length === 0, netReqs.join(' | '));
 
 // 2. estructura: páginas montadas, stickers/mockups fuera
 const ids = await page.$$eval('.lp-page', (els) => els.map((e) => e.id));
-const expected = ['portada','hub','anual','mensual','semana','diario','directorio','ficha','registro','supervision','formacion','cultura','finanzas','notas'];
-check('14 páginas con id', expected.every((id) => ids.includes(id)) && ids.length === expected.length, ids.join(','));
+const expected = ['portada','guia','hub','anual','mensual','semana','diario','directorio','ficha','registro','supervision','formacion','cultura','finanzas','notas'];
+check('15 páginas con id', expected.every((id) => ids.includes(id)) && ids.length === expected.length, ids.join(','));
 check('stickers/mockups excluidos', !ids.includes('stickers') && !ids.some((i) => i.startsWith('mk')));
 
 // 4. etiqueta sin contador X/Y

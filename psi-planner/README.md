@@ -25,26 +25,36 @@ out/Planificador-Clinico.html      ← el entregable (1 archivo, ~1.3 MB)
 ## Cómo usar el HTML
 
 1. **Abrir**: doble clic sobre `Planificador-Clinico.html`.
-2. **Navegar**:
+2. **Ayuda**: el botón **?** de la toolbar abre una ayuda rápida; la página
+   **Guía de uso** (segunda página, también imprimible) explica todo en detalle,
+   incluido **por qué es segura** (todo queda en tu dispositivo).
+3. **Navegar**:
    - Toolbar superior: `‹ ›` (página anterior / siguiente), **Índice**, **Año**.
    - La barra del propio planner (arriba) y las pestañas laterales son enlaces
      reales a cada sección.
    - Teclado: `←` / `→` cambian de página cuando el foco no está en un campo.
-3. **Editar**: todo campo, casilla, opción y nota es real. Lo que escribas o
+4. **Editar**: todo campo, casilla, opción y nota es real. Lo que escribas o
    marques **se guarda solo** en `localStorage` y se restaura al reabrir.
    - Casillas y "estados" (Activo/Pausa/Alta, Presencial/Online, Cobrado/
      Pendiente…) cambian de aspecto al pulsar.
-   - Las tablas de **Directorio**, **Registro de supervisiones** y **Cobros del
-     mes** auto-crecen: al rellenar la última fila aparece otra.
+   - **Registro de cobros** (en Finanzas) es una lista **continua, sin tope
+     mensual**: crece sola al rellenar la última fila (pensado para quien
+     atiende muchos pacientes por día) y muestra en vivo `N cobros · M pend.`.
+     Las tablas de **Directorio** y **Registro de supervisiones** también
+     auto-crecen.
    - Los totales de **Finanzas** (Entra / Sale / Queda / Total cobrado) y las
      barras de progreso (hábitos, horas de formación, gastos) se recalculan en
      vivo a partir de lo que escribas.
-4. **Exportar / Importar**: botones de la toolbar. *Exportar* descarga un
+5. **Exportar / Importar**: botones de la toolbar. *Exportar* descarga un
    `Planificador-Clinico-datos.json` con todo lo escrito; *Importar* lo vuelve a
    cargar (útil para copia de seguridad o pasar de un dispositivo a otro).
-5. **Imprimir / PDF**: botón **Imprimir** o `Ctrl/Cmd+P`. Genera 14 páginas a
+6. **Imprimir / PDF**: botón **Imprimir** o `Ctrl/Cmd+P`. Genera 15 páginas a
    1080 × 810 px exactos (una por hoja).
-6. **Reset**: **Borrar página** (solo la página activa) o **Borrar todo** (todo
+7. **En el teléfono** (modo híbrido): en pantallas chicas la página se ajusta al
+   **ancho** y se baja con scroll vertical; en escritorio e iPad entra completa.
+   En cualquier caso podés **acercar con los dedos** (pellizco). El diseño de
+   página fija se mantiene (ideal para iPad e impresión).
+8. **Reset**: **Borrar página** (solo la página activa) o **Borrar todo** (todo
    el planificador). Ambos piden confirmación.
 
 ## Cómo cambiar idioma / textos
@@ -97,6 +107,19 @@ psi-planner/
 - **Persistencia por nombre** de campo, con espacio de nombres
   `lp:Planificador-Clinico:<página>|<campo>`: cada página guarda lo suyo y no
   contamina a otras del mismo tipo.
+
+### Refinamientos posteriores (a pedido del cliente)
+
+- **Cobros → registro continuo**: la tabla de Finanzas dejó de ser "del mes".
+  Ahora es un **registro de cobros sin tope** que crece solo (apto para gran
+  volumen diario), con columna **Fecha** y contador en vivo `N cobros · M pend.`.
+- **Guía + ayuda** (adición fuera del bundle original, pedida por el cliente):
+  página **Guía de uso** (imprimible) + botón **?** en la toolbar con ayuda
+  rápida. Explican el uso y, sobre todo, la **privacidad**: los datos viven solo
+  en el dispositivo del cliente, sin red.
+- **Responsive híbrido**: se mantiene la **página de tamaño fijo** (fidelidad de
+  impresión e iPad); en teléfono se ajusta al ancho con scroll vertical y se
+  amplían las zonas táctiles. El pellizco-zoom sigue disponible en todo caso.
 
 ## Verificación
 

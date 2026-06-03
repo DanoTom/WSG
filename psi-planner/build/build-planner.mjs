@@ -29,11 +29,13 @@ const DEFAULT_THEME = 'clay';
 const SRC_ORDER = [
   'brand.jsx', 'covers.jsx', 'masters-core.jsx', 'masters-week.jsx',
   'masters-patients.jsx', 'masters-practice.jsx', 'masters-extras.jsx',
+  'masters-guide.jsx',
 ];
 
 // Orden de NAVEGACIÓN del producto + etiqueta de la toolbar (sin contador X/Y).
 const PAGES = [
   { id: 'portada',     comp: 'Cover',             label: 'Portada' },
+  { id: 'guia',        comp: 'Guide',             label: 'Guía de uso' },
   { id: 'hub',         comp: 'IndexHub',          label: 'Índice' },
   { id: 'anual',       comp: 'Yearly',            label: 'Año' },
   { id: 'mensual',     comp: 'MonthlySpread',     label: 'Mes' },
@@ -211,6 +213,35 @@ const globalCss = () => `
   #lp-toolbar .tb-theme-name{font-family:'JetBrains Mono',monospace;font-size:10px;
     text-transform:uppercase;letter-spacing:.1em;color:#8C8275;margin-left:4px}
 
+  /* ── ayuda rápida (modal del botón ?) ── */
+  #lp-help-bg{position:fixed;inset:0;z-index:60;background:rgba(24,20,16,.5);
+    display:none;align-items:center;justify-content:center;padding:20px}
+  #lp-help-bg.on{display:flex}
+  #lp-help{background:#FAF6EE;color:#2B2622;max-width:460px;width:100%;
+    border-radius:14px;padding:22px 24px;box-shadow:0 20px 70px rgba(0,0,0,.4);
+    font-family:'Manrope',system-ui,sans-serif;max-height:90vh;overflow:auto}
+  #lp-help h3{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;
+    font-weight:600;font-size:25px;margin:0 0 14px}
+  #lp-help ul{list-style:none;margin:0 0 18px;padding:0}
+  #lp-help li{display:flex;gap:10px;font-size:13px;line-height:1.5;color:#5A4F45;margin-bottom:10px}
+  #lp-help li b{color:#2B2622}
+  #lp-help .dotb{width:7px;height:7px;border-radius:50%;background:var(--c-deep);margin-top:6px;flex-shrink:0}
+  #lp-help .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+  #lp-help button{font:inherit;cursor:pointer;border:1px solid #D8CFC0;background:#fff;
+    border-radius:8px;padding:9px 15px;color:#2B2622}
+  #lp-help button.primary{background:var(--c-deep);color:#fff;border-color:var(--c-deep)}
+
+  /* ── híbrido táctil: comodidad en teléfono, fijo en escritorio/iPad ── */
+  @media (max-width:760px){
+    #lp-toolbar{padding:8px 10px}
+    #lp-toolbar button{padding:8px 11px}
+    #lp-toolbar .tb-label{min-width:90px}
+  }
+  @media (pointer:coarse){
+    .lp-area,[data-grow]{-webkit-overflow-scrolling:touch}
+    #lp-toolbar button{padding:9px 12px}
+  }
+
   /* ── print: una página por hoja a tamaño exacto ── */
   @page{size:${PAGE_W}px ${PAGE_H}px;margin:0}
   @media print{
@@ -370,6 +401,17 @@ function runtimeJs() {
         });}
         el.textContent='$'+sum;
       }
+      if(kind==='ledger-count'||kind==='ledger-pend'){
+        var lb2=page.querySelector('[data-grow="led"]'); var cnt=0, pend=0;
+        if(lb2)lb2.querySelectorAll('.lp-grow-row').forEach(function(r){
+          var has=false;
+          r.querySelectorAll('input.lp-field').forEach(function(inp){ if(inp.value&&inp.value.trim())has=true; });
+          var st=r.querySelector('input.lp-radio:checked');
+          if(has||st)cnt++;
+          if(st&&/pend/i.test(st.value))pend++;
+        });
+        el.textContent=(kind==='ledger-count'?cnt:pend);
+      }
       if(kind==='fin-entra'||kind==='fin-sale'||kind==='fin-queda'){
         var entra=0, sale=0;
         var lb=page.querySelector('[data-grow="led"]');
@@ -451,15 +493,21 @@ function runtimeJs() {
   function fit(){
     var stage=document.getElementById('lp-stage'); if(!stage)return;
     var tb=document.getElementById('lp-toolbar');
-    var pad=36, toolbarH=tb?tb.offsetHeight:0;
-    var vw=window.innerWidth, vh=window.innerHeight;
-    var s=Math.min((vw-pad)/PAGE_W, (vh-toolbarH-pad)/PAGE_H);
-    s=Math.max(0.2, s);
+    var vw=window.innerWidth, vh=window.innerHeight, toolbarH=tb?tb.offsetHeight:0;
+    // Híbrido: en escritorio/iPad la página entra completa; en móvil se
+    // ajusta al ANCHO (más grande, legible) y se baja con scroll vertical.
+    var narrow = vw < 760;
+    var pad = narrow ? 12 : 36;
+    var s = narrow
+      ? (vw - pad) / PAGE_W
+      : Math.min((vw - pad) / PAGE_W, (vh - toolbarH - pad) / PAGE_H);
+    s = Math.max(0.2, s);
     stage.style.transform='scale('+s+')';
+    var wrap=document.getElementById('lp-stage-wrap');
+    wrap.style.width=(PAGE_W*s)+'px';
+    wrap.style.height=(PAGE_H*s)+'px';
     var fitEl=document.getElementById('lp-fit');
-    if(fitEl){ fitEl.style.height=(PAGE_H*s+pad)+'px'; }
-    document.getElementById('lp-stage-wrap').style.width=(PAGE_W*s)+'px';
-    document.getElementById('lp-stage-wrap').style.height=(PAGE_H*s)+'px';
+    if(fitEl) fitEl.style.padding = narrow ? '8px' : '18px';
   }
 
   // ---- toolbar build ----
@@ -468,6 +516,7 @@ function runtimeJs() {
     tb.innerHTML='';
     function btn(txt,fn,cls,title){var b=document.createElement('button'); b.textContent=txt; if(cls)b.className=cls; if(title)b.title=title; b.addEventListener('click',fn); return b;}
     var brand=document.createElement('span'); brand.className='tb-brand'; brand.textContent='Planificador'; tb.appendChild(brand);
+    tb.appendChild(btn('?',openHelp,null,'Ayuda · cómo funciona'));
     tb.appendChild(btn('‹',function(){step(-1);},'tb-arrow','Página anterior'));
     var lab=document.createElement('span'); lab.className='tb-label'; lab.id='tb-label'; tb.appendChild(lab);
     tb.appendChild(btn('›',function(){step(1);},'tb-arrow','Página siguiente'));
@@ -489,13 +538,37 @@ function runtimeJs() {
     function sep(){var s=document.createElement('span'); s.className='tb-sep'; return s;}
   }
 
+  // ---- ayuda rápida ----
+  function buildHelp(){
+    var bg=document.createElement('div'); bg.id='lp-help-bg';
+    bg.addEventListener('click',function(e){ if(e.target===bg) closeHelp(); });
+    var box=document.createElement('div'); box.id='lp-help';
+    box.innerHTML=''
+      +'<h3>¿Cómo funciona?</h3>'
+      +'<ul>'
+      +'<li><span class="dotb"></span><span><b>Privado:</b> todo se guarda en tu dispositivo, en este navegador. No se envía nada por internet.</span></li>'
+      +'<li><span class="dotb"></span><span><b>Se guarda solo</b> al escribir o marcar; reaparece al reabrir el archivo en el mismo navegador.</span></li>'
+      +'<li><span class="dotb"></span><span><b>Navegá</b> con ‹ ›, los botones Índice y Año, o las flechas ← →.</span></li>'
+      +'<li><span class="dotb"></span><span><b>Respaldo:</b> Exportar guarda un archivo con todo; Importar lo restaura.</span></li>'
+      +'<li><span class="dotb"></span><span><b>Imprimir / PDF:</b> botón Imprimir o Ctrl/Cmd+P.</span></li>'
+      +'</ul>'
+      +'<div class="row"><button id="lp-help-full" class="primary">Abrir guía completa</button><button id="lp-help-close">Cerrar</button></div>';
+    bg.appendChild(box); document.body.appendChild(bg);
+    document.getElementById('lp-help-full').addEventListener('click',function(){ closeHelp(); show('guia'); });
+    document.getElementById('lp-help-close').addEventListener('click',closeHelp);
+  }
+  function openHelp(){ var b=document.getElementById('lp-help-bg'); if(b)b.classList.add('on'); }
+  function closeHelp(){ var b=document.getElementById('lp-help-bg'); if(b)b.classList.remove('on'); }
+
   // ---- init ----
   window.addEventListener('DOMContentLoaded',function(){
+    buildHelp();
     buildToolbar();
     applyTheme(lsGet('lp:theme')||${JSON.stringify(DEFAULT_THEME)});
     window.addEventListener('hashchange',function(){show(location.hash);});
     window.addEventListener('resize',fit);
     document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){closeHelp();return;}
       var t=e.target; var typing=t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
       if(typing)return;
       if(e.key==='ArrowLeft'){e.preventDefault();step(-1);}
