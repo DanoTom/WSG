@@ -90,6 +90,154 @@
             'Vidrio incoloro y transparente; lámina de vidrio en una ventana.'
         }
       ]
+    },
+    // NOTA: los ids 3, 4, 5 quedan a la espera de fragmentos por definir.
+    // Las fechas a continuación se asignan consecutivas a partir del día siguiente
+    // del id 2; el editor del catálogo puede reajustarlas libremente.
+    {
+      id: 6,
+      fecha: '2026-06-09',
+      autor: 'Charles Baudelaire',
+      obra: 'Las flores del mal',
+      'año': '1857',
+      textoOriginal:
+        'Para no sentir el horrible peso del Tiempo que rompe vuestros hombros, hay que emborracharse sin tregua.',
+      palabrasOcultas: [
+        {
+          indicePalabra: 4,
+          palabraCorrecta: 'horrible',
+          pistaDiccionario:
+            'Que causa horror, espanto o una emoción de rechazo muy profunda.'
+        },
+        {
+          indicePalabra: 7,
+          palabraCorrecta: 'Tiempo',
+          pistaDiccionario:
+            'Magnitud que mide la duración o separación de acontecimientos, sujeta al cambio.'
+        },
+        {
+          indicePalabra: 16,
+          palabraCorrecta: 'tregua',
+          pistaDiccionario:
+            'Descanso, suspensión temporal de una lucha, un dolor o una actividad agobiante.'
+        }
+      ]
+    },
+    {
+      id: 7,
+      fecha: '2026-06-10',
+      autor: 'Virginia Woolf',
+      obra: 'Al faro',
+      'año': '1927',
+      textoOriginal:
+        'Se detenía junto al gran espejo del recibidor y miraba su propio rostro con una extraña mezcla de reconocimiento y olvido.',
+      palabrasOcultas: [
+        {
+          indicePalabra: 5,
+          palabraCorrecta: 'espejo',
+          pistaDiccionario:
+            'Superficie pulimentada que refleja los objetos que están delante.'
+        },
+        {
+          indicePalabra: 15,
+          palabraCorrecta: 'extraña',
+          pistaDiccionario:
+            'Rara, singular, ajena a la naturaleza común o que produce sorpresa.'
+        },
+        {
+          indicePalabra: 20,
+          palabraCorrecta: 'olvido',
+          pistaDiccionario:
+            'Cesación de la memoria que se tenía de algo; pérdida de un recuerdo.'
+        }
+      ]
+    },
+    {
+      id: 8,
+      fecha: '2026-06-11',
+      autor: 'Mary Shelley',
+      obra: 'Frankenstein',
+      'año': '1818',
+      textoOriginal:
+        'El mundo era para mí un secreto que deseaba descubrir; la curiosidad y el anhelo de saber eran mis leyes divinas.',
+      palabrasOcultas: [
+        {
+          indicePalabra: 6,
+          palabraCorrecta: 'secreto',
+          pistaDiccionario:
+            'Cosa que cuidadosamente se tiene oculta y reservada de los demás.'
+        },
+        {
+          indicePalabra: 11,
+          palabraCorrecta: 'curiosidad',
+          pistaDiccionario:
+            'Deseo de saber o averiguar una cosa; inclinación hacia lo desconocido.'
+        },
+        {
+          indicePalabra: 14,
+          palabraCorrecta: 'anhelo',
+          pistaDiccionario:
+            'Deseo vehemente, ansia o aspiración intensa de conseguir algo.'
+        }
+      ]
+    },
+    {
+      id: 9,
+      fecha: '2026-06-12',
+      autor: 'Horacio Quiroga',
+      obra: 'Cuentos de amor de locura y de muerte',
+      'año': '1917',
+      textoOriginal:
+        'En la profunda calma de la selva, la naturaleza parece tejer un hilo invisible de misterio que atrapa la razón humana.',
+      palabrasOcultas: [
+        {
+          indicePalabra: 3,
+          palabraCorrecta: 'calma',
+          pistaDiccionario:
+            'Tranquilidad, sosiego, ausencia de agitación o de ruido.'
+        },
+        {
+          indicePalabra: 8,
+          palabraCorrecta: 'naturaleza',
+          pistaDiccionario:
+            'Principio universal que gobierna los seres vivos y el mundo físico.'
+        },
+        {
+          indicePalabra: 13,
+          palabraCorrecta: 'invisible',
+          pistaDiccionario:
+            'Que no puede ser visto, ya sea por su propia esencia o por ocultación.'
+        }
+      ]
+    },
+    {
+      id: 10,
+      fecha: '2026-06-13',
+      autor: 'Oscar Wilde',
+      obra: 'El retrato de Dorian Gray',
+      'año': '1890',
+      textoOriginal:
+        'La única manera de librarse de la tentación es caer en ella. Si resistes, tu alma se enferma de nostalgia.',
+      palabrasOcultas: [
+        {
+          indicePalabra: 7,
+          palabraCorrecta: 'tentación',
+          pistaDiccionario:
+            'Estímulo que induce a hacer algo, especialmente si es prohibido o imprudente.'
+        },
+        {
+          indicePalabra: 15,
+          palabraCorrecta: 'alma',
+          pistaDiccionario:
+            'Principio espiritual e inmortal de los seres humanos; esencia interior.'
+        },
+        {
+          indicePalabra: 19,
+          palabraCorrecta: 'nostalgia',
+          pistaDiccionario:
+            'Pena de verse ausente de la patria o de los recuerdos de tiempos felices.'
+        }
+      ]
     }
   ]);
 
